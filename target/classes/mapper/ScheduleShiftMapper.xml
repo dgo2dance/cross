@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.will.cross.dao.ScheduleShiftMapper">
+  <resultMap id="BaseResultMap" type="com.will.cross.model.ScheduleShift">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="begin_date_1" jdbcType="DATE" property="beginDate1" />
+    <result column="end_date_1" jdbcType="DATE" property="endDate1" />
+    <result column="begin_date_2" jdbcType="DATE" property="beginDate2" />
+    <result column="end_date_2" jdbcType="DATE" property="endDate2" />
+    <result column="hour_count" jdbcType="INTEGER" property="hourCount" />
+    <result column="color" jdbcType="VARCHAR" property="color" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="del_flag" jdbcType="CHAR" property="delFlag" />
+  </resultMap>
+</mapper>
