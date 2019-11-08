@@ -189,7 +189,7 @@
         <profile>
             <id>prod</id>
             <properties>
-                <profileActive>properties</profileActive>
+                <profileActive>prod</profileActive>
             </properties>
         </profile>
     </profiles>
