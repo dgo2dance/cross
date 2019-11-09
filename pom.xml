@@ -32,11 +32,6 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
@@ -106,11 +101,13 @@
             <version>1.2.47</version>
         </dependency>
         <!--阿里 Druid Spring Boot Starter依赖-->
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.1.10</version>
         </dependency>
+
         <!-- freemark模版引擎 -->
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -189,7 +186,7 @@
         <profile>
             <id>prod</id>
             <properties>
-                <profileActive>properties</profileActive>
+                <profileActive>prod</profileActive>
             </properties>
         </profile>
     </profiles>
