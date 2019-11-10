@@ -198,43 +198,33 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
-                    <exclude>application-dev.properties</exclude>
-                    <exclude>application-test.properties</exclude>
-                    <exclude>application-prod.properties</exclude>
+                    <exclude>application-dev.xml</exclude>
+                    <exclude>application-test.xml</exclude>
+                    <exclude>application-prod.xml</exclude>
                 </excludes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>application.properties</include>
-                    <include>application-${profiles.active}.properties</include>
-                    <include>**/*.xml</include>
+                    <include>application-${profiles.active}.xml</include>
+                    <include>application.xml</include>
                 </includes>
-            </resource>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-                <filtering>false</filtering>
             </resource>
         </resources>
 
-
         <plugins>
+
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
+                    <!-- 如果没有这个, 不生效 -->
+                    <fork>true</fork>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
