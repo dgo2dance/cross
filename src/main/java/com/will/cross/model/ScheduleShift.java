@@ -26,25 +26,25 @@ public class ScheduleShift {
      * 起始日期_1
      */
     @Column(name = "begin_date_1")
-    private Date beginDate1;
+    private String beginDate1;
 
     /**
      * 结束日期_1
      */
     @Column(name = "end_date_1")
-    private Date endDate1;
+    private String endDate1;
 
     /**
      * 起始日期_2
      */
     @Column(name = "begin_date_2")
-    private Date beginDate2;
+    private String beginDate2;
 
     /**
      * 结束日期_2
      */
     @Column(name = "end_date_2")
-    private Date endDate2;
+    private String endDate2;
 
     /**
      * 时长
@@ -91,6 +91,28 @@ public class ScheduleShift {
      */
     @Column(name = "del_flag")
     private String delFlag;
+
+    /**
+     * 班次类型：0当天，1跨天
+     */
+    @Column(name = "date_type_1")
+    private String dateType1;
+
+    /**
+     * 班次类型：0当天，班次类型：0当天，1跨天
+     */
+    @Column(name = "date_type_2")
+    private String dateType2;
+
+    /**
+     * 租户
+     */
+    private String master;
+
+    /**
+     * 班次类型：0启用，1休息
+     */
+    private String type;
 
     /**
      * 获取编号
@@ -151,7 +173,7 @@ public class ScheduleShift {
      *
      * @return begin_date_1 - 起始日期_1
      */
-    public Date getBeginDate1() {
+    public String getBeginDate1() {
         return beginDate1;
     }
 
@@ -160,7 +182,7 @@ public class ScheduleShift {
      *
      * @param beginDate1 起始日期_1
      */
-    public void setBeginDate1(Date beginDate1) {
+    public void setBeginDate1(String beginDate1) {
         this.beginDate1 = beginDate1;
     }
 
@@ -169,7 +191,7 @@ public class ScheduleShift {
      *
      * @return end_date_1 - 结束日期_1
      */
-    public Date getEndDate1() {
+    public String getEndDate1() {
         return endDate1;
     }
 
@@ -178,7 +200,7 @@ public class ScheduleShift {
      *
      * @param endDate1 结束日期_1
      */
-    public void setEndDate1(Date endDate1) {
+    public void setEndDate1(String endDate1) {
         this.endDate1 = endDate1;
     }
 
@@ -187,7 +209,7 @@ public class ScheduleShift {
      *
      * @return begin_date_2 - 起始日期_2
      */
-    public Date getBeginDate2() {
+    public String getBeginDate2() {
         return beginDate2;
     }
 
@@ -196,7 +218,7 @@ public class ScheduleShift {
      *
      * @param beginDate2 起始日期_2
      */
-    public void setBeginDate2(Date beginDate2) {
+    public void setBeginDate2(String beginDate2) {
         this.beginDate2 = beginDate2;
     }
 
@@ -205,7 +227,7 @@ public class ScheduleShift {
      *
      * @return end_date_2 - 结束日期_2
      */
-    public Date getEndDate2() {
+    public String getEndDate2() {
         return endDate2;
     }
 
@@ -214,7 +236,7 @@ public class ScheduleShift {
      *
      * @param endDate2 结束日期_2
      */
-    public void setEndDate2(Date endDate2) {
+    public void setEndDate2(String endDate2) {
         this.endDate2 = endDate2;
     }
 
@@ -360,5 +382,77 @@ public class ScheduleShift {
      */
     public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
+    }
+
+    /**
+     * 获取班次类型：0当天，1跨天
+     *
+     * @return date_type_1 - 班次类型：0当天，1跨天
+     */
+    public String getDateType1() {
+        return dateType1;
+    }
+
+    /**
+     * 设置班次类型：0当天，1跨天
+     *
+     * @param dateType1 班次类型：0当天，1跨天
+     */
+    public void setDateType1(String dateType1) {
+        this.dateType1 = dateType1;
+    }
+
+    /**
+     * 获取班次类型：0当天，班次类型：0当天，1跨天
+     *
+     * @return date_type_2 - 班次类型：0当天，班次类型：0当天，1跨天
+     */
+    public String getDateType2() {
+        return dateType2;
+    }
+
+    /**
+     * 设置班次类型：0当天，班次类型：0当天，1跨天
+     *
+     * @param dateType2 班次类型：0当天，班次类型：0当天，1跨天
+     */
+    public void setDateType2(String dateType2) {
+        this.dateType2 = dateType2;
+    }
+
+    /**
+     * 获取租户
+     *
+     * @return master - 租户
+     */
+    public String getMaster() {
+        return master;
+    }
+
+    /**
+     * 设置租户
+     *
+     * @param master 租户
+     */
+    public void setMaster(String master) {
+        this.master = master;
+    }
+
+    /**
+     * 获取班次类型：0启用，1休息
+     *
+     * @return type - 班次类型：0启用，1休息
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * 设置班次类型：0启用，1休息
+     *
+     * @param type 班次类型：0启用，1休息
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 }

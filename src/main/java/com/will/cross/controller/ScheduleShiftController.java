@@ -3,10 +3,12 @@ package com.will.cross.controller;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.model.ScheduleShift;
+import com.will.cross.model.SysOffice;
 import com.will.cross.service.ScheduleShiftService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -22,11 +24,29 @@ public class ScheduleShiftController extends BaseController{
     @Resource
     private ScheduleShiftService scheduleShiftService;
 
+    /**
+     * 创建班次
+     * @param scheduleShift
+     * @return
+     */
     @PostMapping
     public Result add(@RequestBody ScheduleShift scheduleShift) {
         scheduleShift.setId(UUID.randomUUID().toString());
         scheduleShift.setCreateBy(getOpenId());
         scheduleShift.setCreateDate(new Date());
+        scheduleShift.setUpdateBy(getOpenId());
+        scheduleShift.setUpdateDate(new Date());
+        scheduleShift.setMaster(getOpenId());
+
+
+        //设置状态，ture-->0    false-->0
+        if("true".equals(scheduleShift.getStatus())){
+            scheduleShift.setStatus("0");
+        } else{
+            scheduleShift.setStatus("1");
+        }
+
+
         scheduleShiftService.save(scheduleShift);
         return ResultGenerator.genSuccessResult();
     }
@@ -51,9 +71,15 @@ public class ScheduleShiftController extends BaseController{
 
     @GetMapping
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
-        List<ScheduleShift> list = scheduleShiftService.findAll();
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+       // PageHelper.startPage(page, size);
+
+
+        //  PageHelper.startPage(page, size);
+        Condition query=new Condition(ScheduleShift.class);
+        String openid=getOpenId();
+        query.createCriteria().andEqualTo("master","onDD80C0oSuFwM4_swUXx_esEr2A");
+        List<ScheduleShift> list = scheduleShiftService.findByCondition(query);
+      //  PageInfo pageInfo = new PageInfo(list);
+        return ResultGenerator.genSuccessResult(list);
     }
 }

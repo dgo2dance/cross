@@ -1,5 +1,8 @@
 package com.will.cross.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import javax.persistence.*;
 
@@ -16,12 +19,16 @@ public class ScheduleTimeTable {
      * 起始日期
      */
     @Column(name = "begin_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date beginDate;
 
     /**
      * 结束日期-- 未使用
      */
     @Column(name = "end_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endDate;
 
     /**
@@ -62,6 +69,8 @@ public class ScheduleTimeTable {
      * 创建时间
      */
     @Column(name = "create_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
 
     /**
@@ -74,6 +83,8 @@ public class ScheduleTimeTable {
      * 更新时间
      */
     @Column(name = "update_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateDate;
 
     /**
@@ -86,6 +97,41 @@ public class ScheduleTimeTable {
      */
     @Column(name = "del_flag")
     private String delFlag;
+
+
+    /**
+     * master_id
+     */
+    @Column(name = "master_id")
+    private String masterId;
+
+
+    public String getMasterId() {
+        return masterId;
+    }
+
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    /**
+     * org_id
+     */
+    @Column(name = "org_id")
+    private String orgId;
+
+
+
+
+
 
     /**
      * 获取编号
