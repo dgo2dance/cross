@@ -4,10 +4,8 @@ import com.google.common.collect.Lists;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.dto.ScheduleTableDTO;
-import com.will.cross.model.ScheduleTimeTable;
-import com.will.cross.model.ScheduleTimeTableList;
-import com.will.cross.model.SysOffice;
-import com.will.cross.model.SysUser;
+import com.will.cross.model.*;
+import com.will.cross.service.ScheduleShiftService;
 import com.will.cross.service.ScheduleTimeTableService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -39,6 +37,9 @@ public class ScheduleTimeTableController extends BaseController{
 
     @Resource
     private SysOfficeService sysOfficeService;
+
+    @Resource
+    private ScheduleShiftService scheduleShiftService;
 
     @PostMapping
     public Result add(@RequestBody ScheduleTimeTable scheduleTimeTable) {
@@ -131,7 +132,7 @@ public class ScheduleTimeTableController extends BaseController{
                 .andLessThan("beginDate",scheduleTimeTable.getEndDate())
                 .andGreaterThan("beginDate",scheduleTimeTable.getBeginDate());
 
-        List<ScheduleTimeTable> listTabel = scheduleTimeTableService.findAll();
+        List<ScheduleTimeTable> listTabel = scheduleTimeTableService.findByCondition(queryTable);
 
 
         //获取中间所有间隔的时间
@@ -139,10 +140,12 @@ public class ScheduleTimeTableController extends BaseController{
                 DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()));
 
         //获取所有班次的名字;
-        
+        // get the shift id
+        List<String> shiftId = listTabel.stream().map(s -> s.getShiftId()).collect(Collectors.toList());
 
-
-
+        String shiftIds = shiftId.stream().collect(Collectors.joining(","));
+        List<ScheduleShift> sshift=new ArrayList<>();
+        sshift = scheduleShiftService.findByIds(shiftIds);
 
 
 

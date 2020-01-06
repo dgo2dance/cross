@@ -11,9 +11,6 @@ public class ScheduleTableDTO {
      */
     private String resourceId;
 
-    public List<ScheduleTimeTable> getTable() {
-        return table;
-    }
 
     /*
         资源名字
@@ -25,7 +22,15 @@ public class ScheduleTableDTO {
     资源对应下的班表情况；
      */
 
-    List<ScheduleTimeTable> table;
+    public List<ScheduleTimeTableDTO> getTable() {
+        return table;
+    }
+
+    public void setTable(List<ScheduleTimeTableDTO> table) {
+        this.table = table;
+    }
+
+    List<ScheduleTimeTableDTO> table;
 
 
 
@@ -39,9 +44,6 @@ public class ScheduleTableDTO {
         this.resourceName = resourceName;
     }
 
-    public void setTable(List<ScheduleTimeTable> table) {
-        this.table = table;
-    }
 
     public String getResourceId() {
         return resourceId;
