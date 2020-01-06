@@ -138,6 +138,13 @@ public class ScheduleTimeTableController extends BaseController{
         List<String> listDay = DateUtil.getEveryday(DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()),
                 DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()));
 
+        //获取所有班次的名字;
+        
+
+
+
+
+
 
         // 3.将资源用户  及排班数据  进行重组  展示为想要的形式；
         for(SysUser m:list){
