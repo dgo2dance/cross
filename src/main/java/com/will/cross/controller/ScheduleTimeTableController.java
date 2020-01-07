@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.dto.ScheduleTableDTO;
+import com.will.cross.dto.ScheduleTimeTableDTO;
 import com.will.cross.model.*;
 import com.will.cross.service.ScheduleShiftService;
 import com.will.cross.service.ScheduleTimeTableService;
@@ -13,6 +14,7 @@ import com.will.cross.service.SysOfficeService;
 import com.will.cross.service.SysUserService;
 import com.will.cross.util.DateUtil;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -143,7 +145,16 @@ public class ScheduleTimeTableController extends BaseController{
         // get the shift id
         List<String> shiftId = listTabel.stream().map(s -> s.getShiftId()).collect(Collectors.toList());
 
-        String shiftIds = shiftId.stream().collect(Collectors.joining(","));
+        shiftId = shiftId.stream().distinct().collect(Collectors.toList());
+
+            String shiftIds = "";
+            for (String ss : shiftId)
+                {
+                    shiftIds += "'" +ss +"'" +  ",";
+                }
+            shiftIds = shiftIds.substring(0, shiftIds.length() - 1);
+
+     //   String shiftIds = shiftId.stream().collect(Collectors.joining(","));
         List<ScheduleShift> sshift=new ArrayList<>();
         sshift = scheduleShiftService.findByIds(shiftIds);
 
@@ -156,19 +167,30 @@ public class ScheduleTimeTableController extends BaseController{
             w.setResourceId(m.getId());
             w.setResourceName(m.getName());
 
-            List<ScheduleTimeTable> t=Lists.newArrayList();
+            List<ScheduleTimeTableDTO> t=Lists.newArrayList();
             for (String day : listDay) {
-                ScheduleTimeTable table=new ScheduleTimeTable();
+                ScheduleTimeTableDTO table=new ScheduleTimeTableDTO();
 
                 List<ScheduleTimeTable> timetable=listTabel.stream().filter(e->e.getPersonId().equals(m.getId()) )
                         .filter(e->DateUtil.getYearMonthDay(e.getBeginDate()).equals(day))
                         .collect(Collectors.toList());
 
                 if(timetable.size()>0){
-                    t.add(timetable.get(0));
+                    BeanUtils.copyProperties( timetable.get(0),table);
+
+                    // 查找到  shiftName  设置shiftName;
+                    List<ScheduleShift> ss=sshift.stream().filter(e->e.getId().equals(table.getShiftId())).collect(Collectors.toList());
+                    if(ss.size()>0) {
+                        table.setShiftName(ss.get(0).getName());
+                    } else{
+                        table.setShiftName("");
+                    }
+                    t.add(table);
+
                 }else{
                     table.setBeginDate(DateUtil.toDate(day));
                     table.setShiftId("");
+                    table.setShiftName("");
                     t.add(table);
                 }
             }
