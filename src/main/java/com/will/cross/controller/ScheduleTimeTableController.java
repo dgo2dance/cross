@@ -152,7 +152,9 @@ public class ScheduleTimeTableController extends BaseController{
                 {
                     shiftIds += "'" +ss +"'" +  ",";
                 }
-            shiftIds = shiftIds.substring(0, shiftIds.length() - 1);
+            if(shiftIds.length()>1) {
+                shiftIds = shiftIds.substring(0, shiftIds.length() - 1);
+            }
 
      //   String shiftIds = shiftId.stream().collect(Collectors.joining(","));
         List<ScheduleShift> sshift=new ArrayList<>();

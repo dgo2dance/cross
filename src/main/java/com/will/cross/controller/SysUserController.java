@@ -73,6 +73,16 @@ public class SysUserController extends BaseController{
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
+    /**
+     * PC端登录，根据用户名或者手机号，密码判断登录，如果登录成功，设置sessinid;
+     */
+
+
+
+
+
+
+
 
     /**
      * 根据客户端传过来的code从微信服务器获取appid和session_key，然后生成3rdkey返回给客户端，后续请求客户端传3rdkey来维护客户端登录态
