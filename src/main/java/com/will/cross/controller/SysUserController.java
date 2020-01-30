@@ -3,6 +3,7 @@ package com.will.cross.controller;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.configurer.WxApiConstant;
+import com.will.cross.dto.SysUserDTO;
 import com.will.cross.model.SysOffice;
 import com.will.cross.model.SysUser;
 import com.will.cross.service.SysOfficeService;
@@ -131,6 +132,36 @@ public class SysUserController extends BaseController{
         return ResultGenerator.genSuccessResult(list);
     }
 
+
+
+
+    /**
+     * 根据用户名、手机号、EMAIL与密码进行登录
+     * @param 	根据用户名、手机号、密码密码进行登录
+     * @return
+     */
+    @ApiOperation(value = "根据用户名密码进行登录", notes = "根据用户名、手机号、密码密码进行登录 生成session_key")
+    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
+    public Result login(@RequestBody SysUserDTO sysUserDto){
+
+
+        Condition query=new Condition(SysUser.class);
+        query.createCriteria().andEqualTo("phone",sysUserDto.getUsername()).andEqualTo("password",sysUserDto.getPassword());
+
+        List<SysUser> list = sysUserService.findByCondition(query);
+
+
+        if(list.size()<=0){
+            return ResultGenerator.genFailResult("用户名或者密码错误");
+        }
+
+ //       System.out.println(wxSessionKey);
+ //       Long expires = Long.valueOf(String.valueOf(wxSessionMap.get("expires_in")));
+        Long expires=Long.valueOf(6000);
+ //       String thirdSession = wxService.create3rdSession(username, password, expires);
+        String thirdSession="1000000000edddddddddddddd";
+        return ResultGenerator.genSuccessResult(thirdSession);
+    }
 
 
 
