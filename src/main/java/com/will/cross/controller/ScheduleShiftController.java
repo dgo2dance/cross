@@ -76,8 +76,8 @@ public class ScheduleShiftController extends BaseController{
 
         //  PageHelper.startPage(page, size);
         Condition query=new Condition(ScheduleShift.class);
-        String openid=getOpenId();
-        query.createCriteria().andEqualTo("master","onDD80C0oSuFwM4_swUXx_esEr2A");
+        String masterid=getMasterId();
+        query.createCriteria().andEqualTo("master",masterid);
         List<ScheduleShift> list = scheduleShiftService.findByCondition(query);
       //  PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(list);

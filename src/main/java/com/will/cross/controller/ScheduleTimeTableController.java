@@ -5,13 +5,11 @@ import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.dto.ScheduleTableDTO;
 import com.will.cross.dto.ScheduleTimeTableDTO;
+import com.will.cross.dto.ScheduleTimeTableIamDTO;
 import com.will.cross.model.*;
-import com.will.cross.service.ScheduleShiftService;
-import com.will.cross.service.ScheduleTimeTableService;
+import com.will.cross.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.will.cross.service.SysOfficeService;
-import com.will.cross.service.SysUserService;
 import com.will.cross.util.DateUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
@@ -43,20 +41,27 @@ public class ScheduleTimeTableController extends BaseController{
     @Resource
     private ScheduleShiftService scheduleShiftService;
 
+
+    @Resource
+    private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
+
     @PostMapping
     public Result add(@RequestBody ScheduleTimeTable scheduleTimeTable) {
 
         scheduleTimeTable.setCreateDate(new Date());
         scheduleTimeTable.setUpdateDate(new Date());
 
-        String openId=getOpenId();
+        String openId=getMasterId();
         // 1.查询当前激活组织
+        /*
         Condition queryOffice=new Condition(SysOffice.class);
         queryOffice.createCriteria().andEqualTo("master",openId).andEqualTo("status","0");
         List<SysOffice> sysOffice= sysOfficeService.findByCondition(queryOffice);
         scheduleTimeTable.setOrgId(sysOffice.get(0).getId());
-
+        */
+        scheduleTimeTable.setOrgId(openId);
         scheduleTimeTable.setMasterId(openId);
+
         scheduleTimeTable.setDelFlag("0");
         scheduleTimeTable.setId(UUID.randomUUID().toString());
         scheduleTimeTable.setCreateBy(openId);
@@ -65,13 +70,13 @@ public class ScheduleTimeTableController extends BaseController{
         return ResultGenerator.genSuccessResult();
     }
 
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable String id) {
-        scheduleTimeTableService.deleteById(id);
+    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    public Result delete(@RequestBody ScheduleTimeTable scheduleTimeTable) {
+        scheduleTimeTableService.deleteById(scheduleTimeTable.getId());
         return ResultGenerator.genSuccessResult();
     }
 
-    @PutMapping
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
     public Result update(@RequestBody ScheduleTimeTable scheduleTimeTable) {
         scheduleTimeTableService.update(scheduleTimeTable);
         return ResultGenerator.genSuccessResult();
@@ -107,7 +112,7 @@ public class ScheduleTimeTableController extends BaseController{
 
         List<ScheduleTableDTO> scheduleTableDto = Lists.newArrayList();
 
-
+        /**
         String openId=getOpenId();
 
         // 1.查询当前激活组织
@@ -125,12 +130,19 @@ public class ScheduleTimeTableController extends BaseController{
 
         List<SysUser> list = sysUserService.findByCondition(query);
      //   return ResultGenerator.genSuccessResult(list);
+        */
 
+        String orgId=getMasterId();
+
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+        query.createCriteria().andEqualTo("orgId",orgId);
+
+        List<SchedulePersonOrgRelate> sys= schedulePersonOrgRelateService.findByCondition(query);
 
         // 2.根据当前激活组织  及时间段区间  查询里面的排班情况
         //  PageInfo pageInfo = new PageInfo(list);
         Condition queryTable=new Condition(ScheduleTimeTable.class);
-        queryTable.createCriteria().andEqualTo("orgId",sysOffice.get(0).getId())
+        queryTable.createCriteria().andEqualTo("orgId",orgId)
                 .andLessThan("beginDate",scheduleTimeTable.getEndDate())
                 .andGreaterThan("beginDate",scheduleTimeTable.getBeginDate());
 
@@ -158,22 +170,23 @@ public class ScheduleTimeTableController extends BaseController{
 
      //   String shiftIds = shiftId.stream().collect(Collectors.joining(","));
         List<ScheduleShift> sshift=new ArrayList<>();
-        sshift = scheduleShiftService.findByIds(shiftIds);
-
+            if(shiftIds.length()>0) {
+                sshift = scheduleShiftService.findByIds(shiftIds);
+            }
 
 
         // 3.将资源用户  及排班数据  进行重组  展示为想要的形式；
-        for(SysUser m:list){
+        for(SchedulePersonOrgRelate m:sys){
 
             ScheduleTableDTO w=new ScheduleTableDTO();
-            w.setResourceId(m.getId());
-            w.setResourceName(m.getName());
+            w.setResourceId(m.getPersonId());
+            w.setResourceName(m.getPersonName());
 
             List<ScheduleTimeTableDTO> t=Lists.newArrayList();
             for (String day : listDay) {
                 ScheduleTimeTableDTO table=new ScheduleTimeTableDTO();
 
-                List<ScheduleTimeTable> timetable=listTabel.stream().filter(e->e.getPersonId().equals(m.getId()) )
+                List<ScheduleTimeTable> timetable=listTabel.stream().filter(e->e.getPersonId().equals(m.getPersonId()) )
                         .filter(e->DateUtil.getYearMonthDay(e.getBeginDate()).equals(day))
                         .collect(Collectors.toList());
 
@@ -227,4 +240,169 @@ public class ScheduleTimeTableController extends BaseController{
 
 
     }
+
+
+
+
+
+    /**
+     * 获取我的班表情况
+     * @return
+     */
+    @ApiOperation(value = "获取排班表并展示", notes = "")
+    @RequestMapping(value = "/getTableIam", method = RequestMethod.POST, produces = "application/json")
+    public Result getTableIam(@RequestBody ScheduleTimeTable scheduleTimeTable) {
+
+
+        // PageHelper.startPage(page, size);
+
+
+        List<ScheduleTimeTableIamDTO> scheduleTimeTableIamDTO = Lists.newArrayList();
+
+        /**
+         String openId=getOpenId();
+
+         // 1.查询当前激活组织
+         Condition queryOffice=new Condition(SysOffice.class);
+         queryOffice.createCriteria().andEqualTo("master",openId).andEqualTo("status","0");
+
+         List<SysOffice> sysOffice= sysOfficeService.findByCondition(queryOffice);
+
+         //  PageHelper.startPage(page, size);
+
+         // 1.根据当前激活组织查询所有资源，即用户
+         Condition query=new Condition(SysUser.class);
+         String openid=getOpenId();
+         query.createCriteria().andEqualTo("officeId",sysOffice.get(0).getId());
+
+         List<SysUser> list = sysUserService.findByCondition(query);
+         //   return ResultGenerator.genSuccessResult(list);
+         */
+
+        String orgId=getMasterId();
+
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+        query.createCriteria().andEqualTo("orgId",orgId);
+
+        List<SchedulePersonOrgRelate> sys= schedulePersonOrgRelateService.findByCondition(query);
+
+        // 2.根据当前激活组织  及时间段区间  查询里面的排班情况
+        //  PageInfo pageInfo = new PageInfo(list);
+        Condition queryTable=new Condition(ScheduleTimeTable.class);
+        queryTable.createCriteria().andEqualTo("orgId",orgId)
+                .andLessThan("beginDate",scheduleTimeTable.getEndDate())
+                .andGreaterThan("beginDate",scheduleTimeTable.getBeginDate());
+
+        List<ScheduleTimeTable> listTabel = scheduleTimeTableService.findByCondition(queryTable);
+
+
+        //获取中间所有间隔的时间
+        List<String> listDay = DateUtil.getEveryday(DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()),
+                DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()));
+
+        //获取所有班次的名字;
+        // get the shift id
+        List<String> shiftId = listTabel.stream().map(s -> s.getShiftId()).collect(Collectors.toList());
+
+        shiftId = shiftId.stream().distinct().collect(Collectors.toList());
+
+        String shiftIds = "";
+        for (String ss : shiftId)
+        {
+            shiftIds += "'" +ss +"'" +  ",";
+        }
+        if(shiftIds.length()>1) {
+            shiftIds = shiftIds.substring(0, shiftIds.length() - 1);
+        }
+
+        //   String shiftIds = shiftId.stream().collect(Collectors.joining(","));
+        List<ScheduleShift> sshift=new ArrayList<>();
+        if(shiftIds.length()>0) {
+            sshift = scheduleShiftService.findByIds(shiftIds);
+        }
+
+
+        // 3.将资源用户  及排班数据  进行重组  展示为想要的形式；
+        for(SchedulePersonOrgRelate m:sys) {
+            // 如果是当前用户
+            if (m.getPersonId().equals(getUserId())) {
+
+
+
+                for (String day : listDay) {
+                    ScheduleTimeTableIamDTO w = new ScheduleTimeTableIamDTO();
+
+                    List<ScheduleTimeTable> timetable = listTabel.stream().filter(e -> e.getPersonId().equals(m.getPersonId()))
+                            .filter(e -> DateUtil.getYearMonthDay(e.getBeginDate()).equals(day))
+                            .collect(Collectors.toList());
+
+                    if (timetable.size() > 0) {
+
+                        w.setMonth(day.substring(5,7));
+                        w.setDay(day.substring(8,10));
+                        w.setShiftId(timetable.get(0).getShiftId());
+
+
+
+                        // 查找到  shiftName  设置shiftName;
+                        List<ScheduleShift> ss = sshift.stream().filter(e -> e.getId().equals(w.getShiftId())).collect(Collectors.toList());
+                        if (ss.size() > 0) {
+                            w.setShiftName(ss.get(0).getName());
+                            w.setBeginDate1(ss.get(0).getBeginDate1());
+                            w.setEndDate1(ss.get(0).getEndDate1());
+                            w.setBeginDate2(ss.get(0).getBeginDate2());
+                            w.setEndDate2(ss.get(0).getEndDate2());
+                            w.setRemark(ss.get(0).getRemark());
+                        } else {
+                            w.setShiftName("");
+                            w.setBeginDate1("");
+                            w.setEndDate1("");
+                            w.setBeginDate2("");
+                            w.setEndDate2("");
+                            w.setRemark("");
+                        }
+                        scheduleTimeTableIamDTO.add(w);
+
+                    } else {
+                        w.setMonth(day.substring(5,7));
+                        w.setDay(day.substring(8,10));
+                        w.setShiftId("");
+                        w.setShiftName("");
+                        w.setBeginDate1("");
+                        w.setEndDate1("");
+                        w.setBeginDate2("");
+                        w.setEndDate2("");
+                        w.setRemark("");
+                        scheduleTimeTableIamDTO.add(w);
+                    }
+                }
+
+            }
+
+        }
+//
+//
+//        list.stream().forEach(m->{
+//
+//
+//            List<ScheduleTimeTable> timetable=listTabel.stream().filter(e->e.getPersonId().equals(m.getId()) )
+//                    .collect(Collectors.toList());
+//            ScheduleTableDTO w=new ScheduleTableDTO();
+//            w.setResourceId(m.getId());
+//            w.setResourceName(m.getName());
+//            w.setTable(timetable);
+//     //       w.setTable(listTabel);
+//
+//            scheduleTableDto.add(w);
+//
+//
+//
+//        });
+
+        return ResultGenerator.genSuccessResult(scheduleTimeTableIamDTO);
+
+
+    }
+
+
 }

@@ -1,11 +1,21 @@
 package com.will.cross.controller;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+import com.will.cross.model.SchedulePersonOrgRelate;
+import com.will.cross.model.SysOffice;
+import com.will.cross.service.SchedulePersonOrgRelateService;
+import com.will.cross.util.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import tk.mybatis.mapper.entity.Condition;
+
+import java.util.List;
 
 
 /**
@@ -21,12 +31,67 @@ public abstract class BaseController {
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
+	@Autowired
+	private RedisUtil redisUtil;
+
+	@Resource
+	private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
+	/**
+	 * 根据thirdsession获取masterid
+	 */
+	protected  String getMasterId(HttpServletRequest request){
+
+		String masterId="";
+		HttpSession session = request.getSession();
+		String sid = request.getHeader("cookie");
+		if(sid.indexOf("JSESSIONID")>-1) {
+			sid=request.getHeader("Authorization");
+		}
+		String openId = (String) redisUtil.get(sid.toString()).toString();
+		openId=openId.substring(0,openId.indexOf("#"));
+
+		//查询当前激活组织ID; 租户ID;
+		Condition query=new Condition(SchedulePersonOrgRelate.class);
+		query.createCriteria().andEqualTo("personId",openId).andEqualTo("status","0");
+
+		List<SchedulePersonOrgRelate> schedulePersonOrgRelate= schedulePersonOrgRelateService.findByCondition(query);
+
+		if(schedulePersonOrgRelate.size()>0){
+			masterId = schedulePersonOrgRelate.get(0).getOrgId();
+		}
+
+	//	return (UserVO) session.getAttribute(SessionConstUtil.SESSION_USER_KEY);
+		return masterId;
+	}
+
+
+
+	protected  String getUserId(HttpServletRequest request){
+
+
+		HttpSession session = request.getSession();
+		String sid = request.getHeader("cookie");
+		if(sid.indexOf("JSESSIONID")>-1) {
+			sid=request.getHeader("Authorization");
+		}
+		String userId = (String) redisUtil.get(sid.toString()).toString();
+		userId=userId.substring(0,userId.indexOf("#"));
+
+		return userId;
+	}
+
+
 	/**
 	 * 根据thirdsession获取openid
 	 */
-	protected  String getOpenId(){
+	protected  String getOpenId(HttpServletRequest request){
 
-		return "onDD80C0oSuFwM4_swUXx_esEr2A";
+		HttpSession session = request.getSession();
+		String sid = request.getHeader("cookie");
+		String openId = (String) redisUtil.get(sid.toString()).toString();
+		openId=openId.substring(openId.indexOf("#")+1);
+
+		return openId;
 	}
 
 
@@ -50,12 +115,24 @@ public abstract class BaseController {
 	 * @time 下午5:15:15
 	 * @return
 	 */
-//	protected UserVO getUser() {
-//		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-//				.getRequest();
-//		return getUser(request);
-//	}
+	protected String getMasterId() {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+				.getRequest();
+		return getMasterId(request);
+	}
 
+	protected String getOpenId() {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+				.getRequest();
+		return getOpenId(request);
+	}
+
+
+	protected String getUserId() {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+				.getRequest();
+		return getUserId(request);
+	}
 	/**
 	 * 得到当前会话用户ID
 	 * 

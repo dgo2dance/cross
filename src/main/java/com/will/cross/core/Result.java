@@ -1,6 +1,7 @@
 package com.will.cross.core;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 /**
  * @author PualrDwade
@@ -40,6 +41,6 @@ public class Result<T> {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return JSON.toJSONString(this, SerializerFeature.WriteNullStringAsEmpty);
     }
 }

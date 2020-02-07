@@ -189,4 +189,9 @@ public class DateUtil {
 
     }
 
+
+    public static String splitDay(String date) {
+        return date.substring(8,10);
+    }
+
 }

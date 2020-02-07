@@ -1,11 +1,16 @@
 package com.will.cross.controller;
 
+import com.google.common.collect.Lists;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.configurer.WxApiConstant;
+import com.will.cross.dto.SchedulePersonOrgRelateDTO;
 import com.will.cross.dto.SysUserDTO;
+import com.will.cross.model.SchedulePersonOrgRelate;
+import com.will.cross.model.ScheduleShift;
 import com.will.cross.model.SysOffice;
 import com.will.cross.model.SysUser;
+import com.will.cross.service.SchedulePersonOrgRelateService;
 import com.will.cross.service.SysOfficeService;
 import com.will.cross.service.SysUserService;
 import com.github.pagehelper.PageHelper;
@@ -13,14 +18,18 @@ import com.github.pagehelper.PageInfo;
 import com.will.cross.service.WxService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
 * Created by PualrDwade on 2019/10/05.
@@ -37,11 +46,21 @@ public class SysUserController extends BaseController{
     @Resource
     private  WxService wxService;
 
+
+    @Resource
+    private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
+
     @Autowired
     private Environment environment;
 
     @PostMapping
     public Result add(@RequestBody SysUser sysUser) {
+
+
+        sysUser.setId(UUID.randomUUID().toString());
+        sysUser.setOpenid(getOpenId());
+        sysUser.setDelFlag("0");
+
         sysUserService.save(sysUser);
 
         return ResultGenerator.genSuccessResult();
@@ -74,15 +93,6 @@ public class SysUserController extends BaseController{
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
-    /**
-     * PC端登录，根据用户名或者手机号，密码判断登录，如果登录成功，设置sessinid;
-     */
-
-
-
-
-
-
 
 
     /**
@@ -107,7 +117,29 @@ public class SysUserController extends BaseController{
         String wxSessionKey = (String)wxSessionMap.get("session_key");
         System.out.println(wxSessionKey);
         Long expires = Long.valueOf(String.valueOf(wxSessionMap.get("expires_in")));
-        String thirdSession = wxService.create3rdSession(wxOpenId, wxSessionKey, expires);
+
+        //查询用户，如果有用户，则返回，如果无用户，则创建用户；
+        Condition query=new Condition(SysUser.class);
+
+        query.createCriteria().andEqualTo("openid",wxOpenId);
+
+        List<SysUser> list = sysUserService.findByCondition(query);
+
+        String userId="";
+        if(list.size()>0){
+            userId = list.get(0).getId();
+        }
+        else{
+            //创建用户
+            SysUser tmp=new SysUser();
+            tmp.setOpenid(wxOpenId);
+            tmp.setId(UUID.randomUUID().toString());
+            tmp.setDelFlag("0");
+            sysUserService.save(tmp);
+            userId = tmp.getId();
+        }
+
+        String thirdSession = wxService.create3rdSession(wxOpenId, userId, expires);
         return ResultGenerator.genSuccessResult(thirdSession);
     }
 
@@ -116,20 +148,53 @@ public class SysUserController extends BaseController{
     @RequestMapping(value = "/listUser", method = RequestMethod.GET, produces = "application/json")
     public Result listUser(){
 
-        String openId=getOpenId();
+        List<SchedulePersonOrgRelateDTO> schedulePersonOrgRelateDTO= Lists.newArrayList();
+        String orgId=getMasterId();
 
-        Condition queryOffice=new Condition(SysOffice.class);
-        queryOffice.createCriteria().andEqualTo("master",openId).andEqualTo("status","0");
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+        query.createCriteria().andEqualTo("orgId",orgId);
 
-        List<SysOffice> sysOffice= sysOfficeService.findByCondition(queryOffice);
+        List<SchedulePersonOrgRelate> sys= schedulePersonOrgRelateService.findByCondition(query);
 
+        //获取所有人员的信息
+        List<String> personId = sys.stream().map(s -> s.getPersonId()).collect(Collectors.toList());
+
+        personId = personId.stream().distinct().collect(Collectors.toList());
+
+        String personIds = "";
+        for (String ss : personId)
+        {
+            personIds += "'" +ss +"'" +  ",";
+        }
+        if(personIds.length()>1) {
+            personIds = personIds.substring(0, personIds.length() - 1);
+        }
+
+        //   String shiftIds = shiftId.stream().collect(Collectors.joining(","));
+        List<SysUser> user=new ArrayList<>();
+        if(personIds.length()>0) {
+            user = sysUserService.findByIds(personIds);
+        }
+
+        for(SchedulePersonOrgRelate sor:sys){
+            SchedulePersonOrgRelateDTO m =new SchedulePersonOrgRelateDTO();
+            BeanUtils.copyProperties( sor,m);
+
+            List<SysUser> tt= user.stream().filter(e-> e.getId().equals(sor.getPersonId())).collect(Collectors.toList());
+
+            if(tt.size()>0){
+                m.setPhone(tt.get(0).getPhone());
+                m.setMail(tt.get(0).getEmail());
+            }
+
+            schedulePersonOrgRelateDTO.add(m);
+        }
         //  PageHelper.startPage(page, size);
-        Condition query=new Condition(SysUser.class);
-        String openid=getOpenId();
-        query.createCriteria().andEqualTo("officeId",sysOffice.get(0).getId());
+//        Condition query=new Condition(SysUser.class);
+//        query.createCriteria().andEqualTo("officeId",sysOffice.get(0).getId());
 
-        List<SysUser> list = sysUserService.findByCondition(query);
-        return ResultGenerator.genSuccessResult(list);
+ //       List<SysUser> list = sysUserService.findByCondition(query);
+        return ResultGenerator.genSuccessResult(schedulePersonOrgRelateDTO);
     }
 
 
@@ -137,7 +202,7 @@ public class SysUserController extends BaseController{
 
     /**
      * 根据用户名、手机号、EMAIL与密码进行登录
-     * @param 	根据用户名、手机号、密码密码进行登录
+     * @param
      * @return
      */
     @ApiOperation(value = "根据用户名密码进行登录", notes = "根据用户名、手机号、密码密码进行登录 生成session_key")
@@ -158,8 +223,7 @@ public class SysUserController extends BaseController{
  //       System.out.println(wxSessionKey);
  //       Long expires = Long.valueOf(String.valueOf(wxSessionMap.get("expires_in")));
         Long expires=Long.valueOf(6000);
- //       String thirdSession = wxService.create3rdSession(username, password, expires);
-        String thirdSession="1000000000edddddddddddddd";
+        String thirdSession = wxService.create3rdSession(list.get(0).getPhone(), list.get(0).getId(), expires);
         return ResultGenerator.genSuccessResult(thirdSession);
     }
 

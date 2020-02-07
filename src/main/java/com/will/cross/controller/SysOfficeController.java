@@ -2,7 +2,9 @@ package com.will.cross.controller;
 
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
+import com.will.cross.model.SchedulePersonOrgRelate;
 import com.will.cross.model.SysOffice;
+import com.will.cross.service.SchedulePersonOrgRelateService;
 import com.will.cross.service.SysOfficeService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -24,6 +26,9 @@ import java.util.UUID;
 public class SysOfficeController extends  BaseController{
     @Resource
     private SysOfficeService sysOfficeService;
+
+    @Resource
+    private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
 
     @PostMapping
     public Result add(@RequestBody SysOffice sysOffice) {
@@ -63,47 +68,44 @@ public class SysOfficeController extends  BaseController{
         return ResultGenerator.genSuccessResult(sysOffice);
     }
 
+
     /**
      * 依据条件查去当前用户下的有效组织；
-     * @param page
-     * @param size
      * @return
      */
     @GetMapping
     public Result list(@RequestParam String sign, HttpServletRequest request) {
 
-
       //  PageHelper.startPage(page, size);
-        Condition query=new Condition(SysOffice.class);
-        String openid=getOpenId();
-        query.createCriteria().andEqualTo("master","onDD80C0oSuFwM4_swUXx_esEr2A").andEqualTo("status","0");
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+        String userId=getUserId();
+        query.createCriteria().andEqualTo("personId",userId).andEqualTo("status","0");
 
-        List<SysOffice> list = sysOfficeService.findByCondition(query);
-        SysOffice sysOffice=list.get(0);
+        List<SchedulePersonOrgRelate> list = schedulePersonOrgRelateService.findByCondition(query);
+        SchedulePersonOrgRelate sys=list.get(0);
       //  PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(sysOffice);
+        return ResultGenerator.genSuccessResult(sys);
     }
 
 
 
     /**
      * 获取当前用户组织列表；
-     * @param page
-     * @param size
      * @return
      */
     @ApiOperation(value = "获取组织列表", notes = "")
-    @ApiImplicitParam(name = "sign", value = "标识 ", required = true, dataType = "String")
+  //  @ApiImplicitParam(name = "sign", value = "标识 ", required = true, dataType = "String")
     @RequestMapping(value = "/listall", method = RequestMethod.GET, produces = "application/json")
-    public Result listall(@RequestParam String sign, HttpServletRequest request) {
+  //  public Result listall(@RequestParam String sign, HttpServletRequest request) {
 
+    public Result listall(HttpServletRequest request) {
 
         //  PageHelper.startPage(page, size);
-        Condition query=new Condition(SysOffice.class);
-        String openid=getOpenId();
-        query.createCriteria().andEqualTo("master","onDD80C0oSuFwM4_swUXx_esEr2A");
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+        String userid=getUserId();
+        query.createCriteria().andEqualTo("personId",userid);
 
-        List<SysOffice> list = sysOfficeService.findByCondition(query);
+        List<SchedulePersonOrgRelate> list = schedulePersonOrgRelateService.findByCondition(query);
         //  PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(list);
     }
@@ -116,15 +118,18 @@ public class SysOfficeController extends  BaseController{
 
 
         //更新其他组织状态为1;
-        SysOffice tmp= new SysOffice();
-        tmp.setMaster(getOpenId());
-        int flag =sysOfficeService.updateStatusByCustomerId(tmp);
+        SchedulePersonOrgRelate tmp= new SchedulePersonOrgRelate();
+    //    tmp.setMaster(getMasterId());
+        tmp.setPersonId(getUserId());
+        tmp.setStatus("1");
+        int flag =schedulePersonOrgRelateService.updateStatusByCustomerId(tmp);
 
         //更新当前组织状态为0;
-        SysOffice tmp_a= new SysOffice();
+        SchedulePersonOrgRelate tmp_a= new SchedulePersonOrgRelate();
         tmp_a.setStatus("0");
         tmp_a.setId(id);
-        sysOfficeService.update(tmp_a);
+        schedulePersonOrgRelateService.update(tmp_a);
+
 
 
         return ResultGenerator.genSuccessResult();

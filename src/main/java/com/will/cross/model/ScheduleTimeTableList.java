@@ -1,5 +1,8 @@
 package com.will.cross.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import javax.persistence.*;
 
@@ -16,12 +19,16 @@ public class ScheduleTimeTableList {
      * 起始日期
      */
     @Column(name = "begin_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date beginDate;
 
     /**
      * 结束日期
      */
     @Column(name = "end_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endDate;
 
     /**
@@ -68,6 +75,18 @@ public class ScheduleTimeTableList {
      */
     @Column(name = "del_flag")
     private String delFlag;
+
+    /**
+     * 租户ID
+     */
+    @Column(name = "master_id")
+    private String masterId;
+
+    /**
+     * 组织ID
+     */
+    @Column(name = "org_id")
+    private String orgId;
 
     /**
      * 获取编号
@@ -265,5 +284,41 @@ public class ScheduleTimeTableList {
      */
     public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
+    }
+
+    /**
+     * 获取租户ID
+     *
+     * @return master_id - 租户ID
+     */
+    public String getMasterId() {
+        return masterId;
+    }
+
+    /**
+     * 设置租户ID
+     *
+     * @param masterId 租户ID
+     */
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
+    }
+
+    /**
+     * 获取组织ID
+     *
+     * @return org_id - 组织ID
+     */
+    public String getOrgId() {
+        return orgId;
+    }
+
+    /**
+     * 设置组织ID
+     *
+     * @param orgId 组织ID
+     */
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 }
