@@ -143,8 +143,8 @@ public class ScheduleTimeTableController extends BaseController{
         //  PageInfo pageInfo = new PageInfo(list);
         Condition queryTable=new Condition(ScheduleTimeTable.class);
         queryTable.createCriteria().andEqualTo("orgId",orgId)
-                .andLessThan("beginDate",scheduleTimeTable.getEndDate())
-                .andGreaterThan("beginDate",scheduleTimeTable.getBeginDate());
+               .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()))
+                .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
 
         List<ScheduleTimeTable> listTabel = scheduleTimeTableService.findByCondition(queryTable);
 
@@ -290,8 +290,8 @@ public class ScheduleTimeTableController extends BaseController{
         //  PageInfo pageInfo = new PageInfo(list);
         Condition queryTable=new Condition(ScheduleTimeTable.class);
         queryTable.createCriteria().andEqualTo("orgId",orgId)
-                .andLessThan("beginDate",scheduleTimeTable.getEndDate())
-                .andGreaterThan("beginDate",scheduleTimeTable.getBeginDate());
+                .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()))
+                .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
 
         List<ScheduleTimeTable> listTabel = scheduleTimeTableService.findByCondition(queryTable);
 

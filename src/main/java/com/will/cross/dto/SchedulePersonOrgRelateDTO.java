@@ -62,6 +62,20 @@ public class SchedulePersonOrgRelateDTO {
      */
     private String mail;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * 名字
+     */
+    private String name;
+
+
 
 
     public String getPhone() {

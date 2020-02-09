@@ -64,11 +64,16 @@ public class ApiInterceptor implements HandlerInterceptor {
 		    return true;
 		}
 
-		String sessionId = request.getHeader("sessionId");
+	//	String sessionId = request.getHeader("sessionId");
+
+		String sessionId = request.getHeader("cookie");
+		if(sessionId.indexOf("JSESSIONID")>-1) {
+			sessionId=request.getHeader("Authorization");
+		}
 
 		boolean sessionValid = false;
 		
-		if("/sys/user/openapi".equals(request.getRequestURI())){
+		if("/sys/user/openapi".equals(request.getRequestURI())||"/sys/user/login".equals(request.getRequestURI())){
 			// if it's login request, don't intercept with any thing
 			return true;
 		}else {
@@ -84,7 +89,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 			if(!sessionValid){
                 LOG.warn("Request intercepted due to invalid sessionId");
                 out = response.getWriter();
-                out.append(getResStr("40003"));
+                out.append(getResStr("40002"));
                 out.flush();
                 out.close();
             }
@@ -93,7 +98,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 	}
 	
 	private String getResStr(String errorCode){
-		return "{\"errorCode\":" + errorCode + ",\"msg\":\"" + errorCodeMap.get(errorCode) + "\"}";
+		return "{\"Code\":" + errorCode + ",\"msg\":\"" + errorCodeMap.get(errorCode) + "\"}";
 	}
 	
 }

@@ -185,6 +185,7 @@ public class SysUserController extends BaseController{
             if(tt.size()>0){
                 m.setPhone(tt.get(0).getPhone());
                 m.setMail(tt.get(0).getEmail());
+                m.setName(tt.get(0).getName());
             }
 
             schedulePersonOrgRelateDTO.add(m);

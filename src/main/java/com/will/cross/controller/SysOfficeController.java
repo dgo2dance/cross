@@ -4,10 +4,12 @@ import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.model.SchedulePersonOrgRelate;
 import com.will.cross.model.SysOffice;
+import com.will.cross.model.SysUser;
 import com.will.cross.service.SchedulePersonOrgRelateService;
 import com.will.cross.service.SysOfficeService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.will.cross.service.SysUserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,9 @@ public class SysOfficeController extends  BaseController{
     @Resource
     private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
 
+    @Resource
+    private SysUserService sysUserService;
+
     @PostMapping
     public Result add(@RequestBody SysOffice sysOffice) {
         sysOffice.setId(UUID.randomUUID().toString());
@@ -40,12 +45,32 @@ public class SysOfficeController extends  BaseController{
 
 
         //更新其他组织状态为1;
-        SysOffice tmp= new SysOffice();
-        tmp.setMaster(getOpenId());
-        sysOfficeService.updateStatusByCustomerId(tmp);
+//        SysOffice tmp= new SysOffice();
+//        tmp.setMaster(getOpenId());
+//        sysOfficeService.updateStatusByCustomerId(tmp);
 
         //插入新的
         sysOfficeService.save(sysOffice);
+
+
+        //更新其他组织状态为1;
+        SchedulePersonOrgRelate tmp= new SchedulePersonOrgRelate();
+        //    tmp.setMaster(getMasterId());
+        tmp.setPersonId(getUserId());
+        tmp.setStatus("1");
+        int flag =schedulePersonOrgRelateService.updateStatusByCustomerId(tmp);
+
+        SysUser sysUser = sysUserService.findById(getUserId());
+        //插入relate表;
+        SchedulePersonOrgRelate m =new SchedulePersonOrgRelate();
+        m.setId(UUID.randomUUID().toString());
+        m.setPersonId(getUserId());
+        m.setOrgId(sysOffice.getId());
+        m.setOrgName(sysOffice.getName());
+        m.setPersonName(sysUser.getName());
+        m.setStatus("0");
+        m.setIsAdmin("0");
+        schedulePersonOrgRelateService.save(m);
 
         return ResultGenerator.genSuccessResult();
     }
