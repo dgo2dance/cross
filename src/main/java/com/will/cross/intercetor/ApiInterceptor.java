@@ -68,18 +68,17 @@ public class ApiInterceptor implements HandlerInterceptor {
 		    return true;
 		}
 
+		/*
 		response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 		response.setHeader("Access-Control-Allow-Methods", "*");
 		response.setHeader("Access-Control-Max-Age", "3600");
 		response.setHeader("Access-Control-Allow-Credentials", "true");
-
+		*/
 
 	//	String sessionId = request.getHeader("sessionId");
 
 		String sessionId = request.getHeader("cookie");
-		if(sessionId.indexOf("JSESSIONID")>-1) {
-			sessionId=request.getHeader("Authorization");
-		}
+
 
 		boolean sessionValid = false;
 		
@@ -87,6 +86,9 @@ public class ApiInterceptor implements HandlerInterceptor {
 			// if it's login request, don't intercept with any thing
 			return true;
 		}else {
+			if(sessionId!=null&&sessionId.indexOf("JSESSIONID")>-1) {
+				sessionId=request.getHeader("Authorization");
+			}
 			if(StringUtils.isEmpty(sessionId)) {
 				/**
 				LOG.warn("Request intercepted due to empty sessionId");
