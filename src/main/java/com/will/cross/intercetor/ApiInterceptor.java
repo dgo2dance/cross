@@ -68,6 +68,12 @@ public class ApiInterceptor implements HandlerInterceptor {
 		    return true;
 		}
 
+		response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+		response.setHeader("Access-Control-Allow-Methods", "*");
+		response.setHeader("Access-Control-Max-Age", "3600");
+		response.setHeader("Access-Control-Allow-Credentials", "true");
+
+
 	//	String sessionId = request.getHeader("sessionId");
 
 		String sessionId = request.getHeader("cookie");

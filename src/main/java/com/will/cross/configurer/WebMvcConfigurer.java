@@ -143,7 +143,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
                 **/
                  registry.addInterceptor(myInterceptor());
-     //   }
+       // }
     }
 
     /**
