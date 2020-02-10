@@ -36,7 +36,7 @@ public class ScheduleShiftController extends BaseController{
         scheduleShift.setCreateDate(new Date());
         scheduleShift.setUpdateBy(getOpenId());
         scheduleShift.setUpdateDate(new Date());
-        scheduleShift.setMaster(getOpenId());
+        scheduleShift.setMaster(getMasterId());
 
 
         //设置状态，ture-->0    false-->0

@@ -63,7 +63,23 @@ public class SysUserController extends BaseController{
 
         sysUserService.save(sysUser);
 
+        SysOffice sysOffice =sysOfficeService.findById(sysUser.getOfficeId());
+
+        //添加人员组织关系
+
+        SchedulePersonOrgRelate m =new SchedulePersonOrgRelate();
+        m.setId(UUID.randomUUID().toString());
+        m.setPersonId(sysUser.getId());
+        m.setOrgId(sysUser.getOfficeId());
+        m.setOrgName(sysOffice.getName());
+        m.setPersonName(sysUser.getName());
+        m.setStatus("0");
+        m.setIsAdmin("1");
+        schedulePersonOrgRelateService.save(m);
+
         return ResultGenerator.genSuccessResult();
+
+
     }
 
     @DeleteMapping("/{id}")

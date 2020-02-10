@@ -1,18 +1,23 @@
 package com.will.cross.intercetor;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.ImmutableMap;
 
 import com.will.cross.configurer.Constants;
+import com.will.cross.core.Result;
+import com.will.cross.core.ResultCode;
 import com.will.cross.util.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
@@ -20,17 +25,16 @@ import java.io.PrintWriter;
  * @author xiefengchang
  *
  */
+@Component
 public class ApiInterceptor implements HandlerInterceptor {
 	private static final Logger LOG = LoggerFactory.getLogger(ApiInterceptor.class);
 	private static ImmutableMap<String,Integer> methodMap = ImmutableMap.of("GET", 1, "POST", 2, "PUT", 4, "DELETE", 8);
 	
+
 	@Autowired
 	private RedisUtil redisUtil;
 
-	
-	@Autowired
-	private ImmutableMap<String, String> errorCodeMap;
-	
+
 	
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object arg2, Exception exp)
@@ -73,32 +77,57 @@ public class ApiInterceptor implements HandlerInterceptor {
 
 		boolean sessionValid = false;
 		
-		if("/sys/user/openapi".equals(request.getRequestURI())||"/sys/user/login".equals(request.getRequestURI())){
+		if(request.getRequestURI().indexOf("/sys/user/openapi")>-1||request.getRequestURI().indexOf("sys/user/login")>-1){
 			// if it's login request, don't intercept with any thing
 			return true;
 		}else {
 			if(StringUtils.isEmpty(sessionId)) {
+				/**
 				LOG.warn("Request intercepted due to empty sessionId");
                 out = response.getWriter();
                 out.append(getResStr("40002"));
                 out.flush();
                 out.close();
 				return false;
+				 */
+				Result result = new Result();
+				result.setCode(ResultCode.UNAUTHORIZED).setMessage("登录失败，请重新登录");
+				response.setStatus(403);
+				responseResult(response, result);
+				response.sendError(403,"用户登录验证不正确");
+
 			}
 		    sessionValid = checkSessionAvailable(sessionId);
 			if(!sessionValid){
                 LOG.warn("Request intercepted due to invalid sessionId");
+                /**
                 out = response.getWriter();
                 out.append(getResStr("40002"));
                 out.flush();
                 out.close();
+				*/
+				Result result = new Result();
+				result.setCode(ResultCode.UNAUTHORIZED).setMessage("登录失败，请重新登录");
+				response.setStatus(403);
+				responseResult(response, result);
+				response.sendError(403,"用户登录验证不正确");
+				return false;
+
             }
 		    return sessionValid;
 		}
 	}
-	
-	private String getResStr(String errorCode){
-		return "{\"Code\":" + errorCode + ",\"msg\":\"" + errorCodeMap.get(errorCode) + "\"}";
+
+	private void responseResult(HttpServletResponse response, Result result) {
+		response.setCharacterEncoding("UTF-8");
+		response.setHeader("Content-type", "application/json;charset=UTF-8");
+
+		try {
+			response.getWriter().write(JSON.toJSONString(result));
+		} catch (IOException ex) {
+
+		}
 	}
-	
+
+
 }
