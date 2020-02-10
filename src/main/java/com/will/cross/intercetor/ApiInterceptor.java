@@ -83,7 +83,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
 		boolean sessionValid = false;
 		
-		if(request.getRequestURI().indexOf("/sys/user/openapi")>-1||request.getRequestURI().indexOf("sys/user/login")>-1){
+		if(request.getRequestURI().indexOf("/sys/user/openapi")>-1||request.getRequestURI().indexOf("sys/user/login")>-1||request.getRequestURI().indexOf("swagger-ui")>-1){
 			// if it's login request, don't intercept with any thing
 			return true;
 		}else {
