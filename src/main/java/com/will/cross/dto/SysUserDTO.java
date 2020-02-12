@@ -46,6 +46,17 @@ public class SysUserDTO {
      */
     private String password;
 
+    public String getOrg() {
+        return org;
+    }
+
+    public void setOrg(String org) {
+        this.org = org;
+    }
+
+    private String org;
+
+
     /**
      * 工号
      */

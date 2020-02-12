@@ -17,6 +17,7 @@
     <result column="del_flag" jdbcType="CHAR" property="delFlag" />
     <result column="person_name" jdbcType="VARCHAR" property="personName" />
     <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="type" jdbcType="CHAR" property="type" />
   </resultMap>
 
 

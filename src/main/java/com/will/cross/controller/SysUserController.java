@@ -6,16 +6,10 @@ import com.will.cross.core.ResultGenerator;
 import com.will.cross.configurer.WxApiConstant;
 import com.will.cross.dto.SchedulePersonOrgRelateDTO;
 import com.will.cross.dto.SysUserDTO;
-import com.will.cross.model.SchedulePersonOrgRelate;
-import com.will.cross.model.ScheduleShift;
-import com.will.cross.model.SysOffice;
-import com.will.cross.model.SysUser;
-import com.will.cross.service.SchedulePersonOrgRelateService;
-import com.will.cross.service.SysOfficeService;
-import com.will.cross.service.SysUserService;
+import com.will.cross.model.*;
+import com.will.cross.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.will.cross.service.WxService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
@@ -25,10 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +37,8 @@ public class SysUserController extends BaseController{
     @Resource
     private  WxService wxService;
 
+    @Resource
+    private ScheduleWebRegisterService scheduleWebRegisterService;
 
     @Resource
     private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
@@ -88,9 +81,26 @@ public class SysUserController extends BaseController{
         return ResultGenerator.genSuccessResult();
     }
 
-    @PutMapping
-    public Result update(@RequestBody SysUser sysUser) {
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
+    public Result update(@RequestBody SchedulePersonOrgRelateDTO m) {
+
+        SysUser sysUser=new SysUser();
+        SchedulePersonOrgRelate schedulePersonOrgRelate=new SchedulePersonOrgRelate();
+
+     //   BeanUtils.copyProperties(schedulePersonOrgRelate,m);
+        schedulePersonOrgRelate.setId(m.getId());
+        schedulePersonOrgRelate.setType(m.getType());
+        schedulePersonOrgRelate.setPersonName(m.getName());
+
+
+        sysUser.setId(m.getPersonId());
+        sysUser.setPhone(m.getPhone());
+        sysUser.setName(m.getName());
+        sysUser.setPassword(m.getPassword());
+
+
         sysUserService.update(sysUser);
+        schedulePersonOrgRelateService.update(schedulePersonOrgRelate);
         return ResultGenerator.genSuccessResult();
     }
 
@@ -242,6 +252,41 @@ public class SysUserController extends BaseController{
         Long expires=Long.valueOf(6000);
         String thirdSession = wxService.create3rdSession(list.get(0).getPhone(), list.get(0).getId(), expires);
         return ResultGenerator.genSuccessResult(thirdSession);
+    }
+
+
+    /**
+     * 注册
+     * @param sysUserDto
+     * @return
+     */
+    @ApiOperation(value = "注册", notes = "注册")
+    @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
+    public Result register(@RequestBody SysUserDTO sysUserDto){
+
+
+        ScheduleWebRegister scheduleWebRegister=new ScheduleWebRegister();
+        SysUser sysUser=new SysUser();
+
+        sysUser.setId(UUID.randomUUID().toString());
+        sysUser.setPhone(sysUserDto.getPhone());
+        sysUser.setPassword(sysUserDto.getPassword());
+        sysUser.setName(sysUserDto.getUsername());
+        sysUser.setDelFlag("0");
+
+        sysUserService.save(sysUser);
+
+        scheduleWebRegister.setId(UUID.randomUUID().toString());
+        scheduleWebRegister.setName(sysUserDto.getUsername());
+        scheduleWebRegister.setMobile(sysUserDto.getPhone());
+        scheduleWebRegister.setRemark(sysUserDto.getOrg());
+        scheduleWebRegister.setPersonId(sysUser.getId());
+        scheduleWebRegister.setDelFlag("0");
+        scheduleWebRegister.setCreateDate(new Date());
+
+        scheduleWebRegisterService.save(scheduleWebRegister);
+
+        return ResultGenerator.genSuccessResult();
     }
 
 

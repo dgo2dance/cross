@@ -24,6 +24,16 @@ public class SchedulePersonOrgRelateDTO {
     @Column(name = "org_id")
     private String orgId;
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String password;
+
     /**
      * 状态  0:启用   1 未启用
      */
@@ -61,6 +71,20 @@ public class SchedulePersonOrgRelateDTO {
      * 邮箱
      */
     private String mail;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * 类型 0：参与排班 1不参与排班
+     */
+    private String type;
+
 
     public String getName() {
         return name;

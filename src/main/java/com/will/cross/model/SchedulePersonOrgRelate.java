@@ -78,6 +78,11 @@ public class SchedulePersonOrgRelate {
     private String orgName;
 
     /**
+     * 类型 0：参与排班 1不参与排班
+     */
+    private String type;
+
+    /**
      * 获取编号
      *
      * @return id - 编号
@@ -291,5 +296,23 @@ public class SchedulePersonOrgRelate {
      */
     public void setOrgName(String orgName) {
         this.orgName = orgName;
+    }
+
+    /**
+     * 获取类型 0：参与排班 1不参与排班
+     *
+     * @return type - 类型 0：参与排班 1不参与排班
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * 设置类型 0：参与排班 1不参与排班
+     *
+     * @param type 类型 0：参与排班 1不参与排班
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 }

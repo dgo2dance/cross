@@ -43,7 +43,7 @@ public abstract class BaseController {
 
 		String masterId="";
 		HttpSession session = request.getSession();
-		String sid = request.getHeader("cookie");
+		String sid = request.getHeader("Authorization");
 		if(sid.indexOf("JSESSIONID")>-1) {
 			sid=request.getHeader("Authorization");
 		}
@@ -70,7 +70,7 @@ public abstract class BaseController {
 
 
 		HttpSession session = request.getSession();
-		String sid = request.getHeader("cookie");
+		String sid = request.getHeader("Authorization");
 		if(sid.indexOf("JSESSIONID")>-1) {
 			sid=request.getHeader("Authorization");
 		}

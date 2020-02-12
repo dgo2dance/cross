@@ -1,13 +1,10 @@
 package com.will.cross.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
 import javax.persistence.*;
 
-@Table(name = "schedule_time_table")
-public class ScheduleTimeTable {
+@Table(name = "schedule_web_register")
+public class ScheduleWebRegister {
     /**
      * 编号
      */
@@ -16,38 +13,24 @@ public class ScheduleTimeTable {
     private String id;
 
     /**
-     * 起始日期
+     * 备注
      */
-    @Column(name = "begin_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
-    private Date beginDate;
+    private String mobile;
 
     /**
-     * 结束日期-- 未使用
+     * 备注
      */
-    @Column(name = "end_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
-    private Date endDate;
+    private String name;
 
     /**
-     * 排班时间段表id
+     * 备注
      */
-    @Column(name = "time_table_list_id")
-    private String timeTableListId;
+    private String password;
 
     /**
-     * 人员id
+     * 备注
      */
-    @Column(name = "person_id")
-    private String personId;
-
-    /**
-     * 班次id
-     */
-    @Column(name = "shift_id")
-    private String shiftId;
+    private String company;
 
     /**
      * 备注
@@ -69,8 +52,6 @@ public class ScheduleTimeTable {
      * 创建时间
      */
     @Column(name = "create_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
 
     /**
@@ -83,8 +64,6 @@ public class ScheduleTimeTable {
      * 更新时间
      */
     @Column(name = "update_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateDate;
 
     /**
@@ -98,40 +77,8 @@ public class ScheduleTimeTable {
     @Column(name = "del_flag")
     private String delFlag;
 
-
-    /**
-     * master_id
-     */
-    @Column(name = "master_id")
-    private String masterId;
-
-
-    public String getMasterId() {
-        return masterId;
-    }
-
-    public void setMasterId(String masterId) {
-        this.masterId = masterId;
-    }
-
-    public String getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
-    /**
-     * org_id
-     */
-    @Column(name = "org_id")
-    private String orgId;
-
-
-
-
-
+    @Column(name = "person_id")
+    private String personId;
 
     /**
      * 获取编号
@@ -152,93 +99,75 @@ public class ScheduleTimeTable {
     }
 
     /**
-     * 获取起始日期
+     * 获取备注
      *
-     * @return begin_date - 起始日期
+     * @return mobile - 备注
      */
-    public Date getBeginDate() {
-        return beginDate;
+    public String getMobile() {
+        return mobile;
     }
 
     /**
-     * 设置起始日期
+     * 设置备注
      *
-     * @param beginDate 起始日期
+     * @param mobile 备注
      */
-    public void setBeginDate(Date beginDate) {
-        this.beginDate = beginDate;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     /**
-     * 获取结束日期-- 未使用
+     * 获取备注
      *
-     * @return end_date - 结束日期-- 未使用
+     * @return name - 备注
      */
-    public Date getEndDate() {
-        return endDate;
+    public String getName() {
+        return name;
     }
 
     /**
-     * 设置结束日期-- 未使用
+     * 设置备注
      *
-     * @param endDate 结束日期-- 未使用
+     * @param name 备注
      */
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
-     * 获取排班时间段表id
+     * 获取备注
      *
-     * @return time_table_list_id - 排班时间段表id
+     * @return password - 备注
      */
-    public String getTimeTableListId() {
-        return timeTableListId;
+    public String getPassword() {
+        return password;
     }
 
     /**
-     * 设置排班时间段表id
+     * 设置备注
      *
-     * @param timeTableListId 排班时间段表id
+     * @param password 备注
      */
-    public void setTimeTableListId(String timeTableListId) {
-        this.timeTableListId = timeTableListId;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
-     * 获取人员id
+     * 获取备注
      *
-     * @return person_id - 人员id
+     * @return company - 备注
      */
-    public String getPersonId() {
-        return personId;
+    public String getCompany() {
+        return company;
     }
 
     /**
-     * 设置人员id
+     * 设置备注
      *
-     * @param personId 人员id
+     * @param company 备注
      */
-    public void setPersonId(String personId) {
-        this.personId = personId;
-    }
-
-    /**
-     * 获取班次id
-     *
-     * @return shift_id - 班次id
-     */
-    public String getShiftId() {
-        return shiftId;
-    }
-
-    /**
-     * 设置班次id
-     *
-     * @param shiftId 班次id
-     */
-    public void setShiftId(String shiftId) {
-        this.shiftId = shiftId;
+    public void setCompany(String company) {
+        this.company = company;
     }
 
     /**
@@ -383,5 +312,19 @@ public class ScheduleTimeTable {
      */
     public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
+    }
+
+    /**
+     * @return person_id
+     */
+    public String getPersonId() {
+        return personId;
+    }
+
+    /**
+     * @param personId
+     */
+    public void setPersonId(String personId) {
+        this.personId = personId;
     }
 }
