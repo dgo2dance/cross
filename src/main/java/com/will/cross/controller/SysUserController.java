@@ -75,9 +75,26 @@ public class SysUserController extends BaseController{
 
     }
 
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable String id) {
-        sysUserService.deleteById(id);
+    @RequestMapping(value = "/delete", method = RequestMethod.GET, produces = "application/json")
+    public Result delete(@RequestParam(required = true,value = "id")String id) {
+      //  sysUserService.deleteById(id);
+        //查询用户，如果有用户，则返回，如果无用户，则创建用户；
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+
+        query.createCriteria().andEqualTo("personId",id).andEqualTo("orgId",getMasterId());
+
+        List<SchedulePersonOrgRelate> list = schedulePersonOrgRelateService.findByCondition(query);
+
+        if(list.size()>0){
+            for(SchedulePersonOrgRelate m:list)
+            {
+                schedulePersonOrgRelateService.deleteById(m.getId());
+            }
+
+
+        }
+
+
         return ResultGenerator.genSuccessResult();
     }
 
@@ -104,8 +121,36 @@ public class SysUserController extends BaseController{
         return ResultGenerator.genSuccessResult();
     }
 
-    @GetMapping("/{id}")
-    public Result detail(@PathVariable String id) {
+    /*
+    小程序端update
+     */
+    @RequestMapping(value = "/wxupdate", method = RequestMethod.POST, produces = "application/json")
+    public Result wxupdate(@RequestBody SchedulePersonOrgRelateDTO m) {
+
+        SysUser sysUser=new SysUser();
+
+
+        SchedulePersonOrgRelate schedulePersonOrgRelate=new SchedulePersonOrgRelate();
+
+        //   BeanUtils.copyProperties(schedulePersonOrgRelate,m);
+
+        schedulePersonOrgRelate.setPersonName(m.getName());
+        schedulePersonOrgRelate.setPersonId(m.getId());
+
+
+        sysUser.setId(m.getId());
+        sysUser.setPhone(m.getPhone());
+        sysUser.setName(m.getName());
+
+        schedulePersonOrgRelateService.updateNameBypersonId(schedulePersonOrgRelate);
+
+
+        sysUserService.update(sysUser);
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @RequestMapping(value = "/detail", method = RequestMethod.GET, produces = "application/json")
+    public Result detail(@RequestParam(required = true,value = "id")String id) {
         SysUser sysUser = sysUserService.findById(id);
         return ResultGenerator.genSuccessResult(sysUser);
     }

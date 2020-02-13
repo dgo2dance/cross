@@ -11,4 +11,5 @@ public interface SchedulePersonOrgRelateService extends Service<SchedulePersonOr
 
     public int updateStatusByCustomerId(SchedulePersonOrgRelate schedulePersonOrgRelate);
 
+    public int  updateNameBypersonId(SchedulePersonOrgRelate schedulePersonOrgRelate);
 }

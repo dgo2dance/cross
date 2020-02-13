@@ -27,4 +27,12 @@
   set status=1
   where person_id= #{personId,jdbcType=VARCHAR}
   </update>
+
+
+  <update id="updateNameBypersonId" parameterType="com.will.cross.model.SchedulePersonOrgRelate">
+  update schedule_person_org_relate
+  set person_name=#{personName,jdbcType=VARCHAR}
+  where person_id= #{personId,jdbcType=VARCHAR}
+  </update>
+
 </mapper>

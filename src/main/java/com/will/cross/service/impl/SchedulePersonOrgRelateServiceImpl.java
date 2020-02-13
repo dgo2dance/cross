@@ -23,4 +23,8 @@ public class SchedulePersonOrgRelateServiceImpl extends AbstractService<Schedule
     public int updateStatusByCustomerId(SchedulePersonOrgRelate sysOffice){
         return  schedulePersonOrgRelateMapper.updateStatusByCustomerId(sysOffice);
     };
+
+    public int updateNameBypersonId(SchedulePersonOrgRelate sysOffice){
+        return  schedulePersonOrgRelateMapper.updateNameBypersonId(sysOffice);
+    };
 }

@@ -7,4 +7,6 @@ import com.will.cross.model.SysOffice;
 public interface SchedulePersonOrgRelateMapper extends Mapper<SchedulePersonOrgRelate> {
 
     int updateStatusByCustomerId(SchedulePersonOrgRelate sysOffice);
+
+    int updateNameBypersonId(SchedulePersonOrgRelate sysOffice);
 }
