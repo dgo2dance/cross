@@ -51,14 +51,23 @@ public class ScheduleShiftController extends BaseController{
         return ResultGenerator.genSuccessResult();
     }
 
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable String id) {
+    @RequestMapping(value = "/delete", method = RequestMethod.GET, produces = "application/json")
+    public Result delete(@RequestParam(required = true,value = "id")String id) {
         scheduleShiftService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
-    @PutMapping
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
     public Result update(@RequestBody ScheduleShift scheduleShift) {
+
+
+        //设置状态，ture-->0    false-->0
+        if("true".equals(scheduleShift.getStatus())){
+            scheduleShift.setStatus("0");
+        } else{
+            scheduleShift.setStatus("1");
+        }
+
         scheduleShiftService.update(scheduleShift);
         return ResultGenerator.genSuccessResult();
     }
