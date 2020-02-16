@@ -257,6 +257,12 @@ public class SysUserController extends BaseController{
                 m.setPhone(tt.get(0).getPhone());
                 m.setMail(tt.get(0).getEmail());
                 m.setName(tt.get(0).getName());
+                m.setOpenid(tt.get(0).getOpenid());
+                if(getUserId().equals(tt.get(0).getId())){
+                    m.setCurrentUserFlag("0");
+                } else {
+                    m.setCurrentUserFlag("1");
+                }
             }
 
             schedulePersonOrgRelateDTO.add(m);

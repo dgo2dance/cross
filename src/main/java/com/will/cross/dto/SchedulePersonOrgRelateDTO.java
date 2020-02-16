@@ -100,6 +100,33 @@ public class SchedulePersonOrgRelateDTO {
     private String name;
 
 
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public String getCurrentUserFlag() {
+        return currentUserFlag;
+    }
+
+    public void setCurrentUserFlag(String currentUserFlag) {
+        this.currentUserFlag = currentUserFlag;
+    }
+
+    /**
+     * openid
+     */
+    private String openid;
+
+    /*
+    * 是否为当前用户表示
+     */
+    private String currentUserFlag;
+
+
 
 
     public String getPhone() {
