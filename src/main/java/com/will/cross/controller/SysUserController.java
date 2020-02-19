@@ -53,25 +53,53 @@ public class SysUserController extends BaseController{
         sysUser.setId(UUID.randomUUID().toString());
         sysUser.setOpenid(getOpenId());
         sysUser.setDelFlag("0");
+        // 判断当前用户是否存在，已存在则不创建，更新
+        Condition query=new Condition(SysUser.class);
 
-        sysUserService.save(sysUser);
+        query.createCriteria().andEqualTo("openid",getOpenId());
+
+        List<SysUser> list = sysUserService.findByCondition(query);
+
+        if(list.size()>0){
+            sysUser.setId(list.get(0).getId());
+            sysUserService.update(sysUser);
+        } else{
+            sysUserService.save(sysUser);
+        }
+
+        Condition queryt=new Condition(SysUser.class);
+
+        queryt.createCriteria().andEqualTo("openid",getOpenId());
+
+        List<SysUser> listt = sysUserService.findByCondition(queryt);
 
         SysOffice sysOffice =sysOfficeService.findById(sysUser.getOfficeId());
 
-        //添加人员组织关系
+        //判断当前用户组织关系是否存在，已存在则不创建
+        //查询用户，如果有用户，则返回，如果无用户，则创建用户；
+        Condition querys=new Condition(SchedulePersonOrgRelate.class);
+
+        querys.createCriteria().andEqualTo("personId",listt.get(0).getId()).andEqualTo("orgId",getMasterId());
+
+        List<SchedulePersonOrgRelate> lists = schedulePersonOrgRelateService.findByCondition(querys);
 
         SchedulePersonOrgRelate m =new SchedulePersonOrgRelate();
         m.setId(UUID.randomUUID().toString());
-        m.setPersonId(sysUser.getId());
+        m.setPersonId(listt.get(0).getId());
         m.setOrgId(sysUser.getOfficeId());
         m.setOrgName(sysOffice.getName());
         m.setPersonName(sysUser.getName());
         m.setStatus("0");
         m.setIsAdmin("1");
-        schedulePersonOrgRelateService.save(m);
+        if(lists.size()<1){
+            //添加人员组织关系
+            schedulePersonOrgRelateService.save(m);
+        } else{
+            m.setId(lists.get(0).getId());
+            schedulePersonOrgRelateService.update(m);
+        }
 
         return ResultGenerator.genSuccessResult();
-
 
     }
 
