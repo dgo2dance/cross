@@ -37,10 +37,18 @@ public class ScheduleTablePCDTO {
     private  String title;
 
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
+    public void setBgColor(String bgColor) {
+        this.bgColor = bgColor;
+    }
+
     /*
-      背景颜色
-    */
-    private  String bgcolor;
+          背景颜色
+        */
+    private  String bgColor;
 
 
     private  Boolean showPopover;
@@ -91,13 +99,7 @@ public class ScheduleTablePCDTO {
         this.title = title;
     }
 
-    public String getBgcolor() {
-        return bgcolor;
-    }
 
-    public void setBgcolor(String bgcolor) {
-        this.bgcolor = bgcolor;
-    }
 
     public Boolean getShowPopover() {
         return showPopover;

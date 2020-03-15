@@ -358,6 +358,7 @@ public class ScheduleTimeTableController extends BaseController{
                     List<ScheduleShift> ss=sshift.stream().filter(e->e.getId().equals(table.getShiftId())).collect(Collectors.toList());
                     if(ss.size()>0) {
                         w.setTitle(ss.get(0).getName());
+                        w.setBgColor(ss.get(0).getColor());
                     } else{
                         w.setTitle("");
                     }
