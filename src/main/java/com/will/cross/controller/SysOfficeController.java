@@ -73,6 +73,7 @@ public class SysOfficeController extends  BaseController{
         schedulePersonOrgRelateService.save(m);
 
         return ResultGenerator.genSuccessResult();
+
     }
 
     @DeleteMapping("/{id}")

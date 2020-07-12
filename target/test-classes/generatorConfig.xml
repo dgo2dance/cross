@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+    <!DOCTYPE generatorConfiguration
+      PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+      "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+	<!-- jar path
+	<classPathEntry
+		location="E:\workspace\spring-boot\target\spring-boot-0.0.1-SNAPSHOT\WEB-INF\lib\mysql-connector-java-5.1.38.jar" />
+		-->
+
+	<!-- mapping config -->
+	<context id="mysqlTables" targetRuntime="MyBatis3">
+
+		<!-- 关闭注释 -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+
+		<!-- jdbc conn -->
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://localhost:3306/jsite-test?useUnicode=true"
+			userId="root" password="123456">
+		</jdbcConnection>
+
+		<!-- java type resolver -->
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<!-- model package path
+		<javaModelGenerator targetPackage="com.will.cross.model.custom"
+			targetProject="src/main/java">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+		-->
+
+
+		<!-- sqlmap package path -->
+		<sqlMapGenerator targetPackage="mapper"
+			targetProject="src/main/resources/custom">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+
+		<!-- dao interface package path -->
+		<javaClientGenerator type="XMLMAPPER"
+			targetPackage="com.will.cross.dao.custom" targetProject="src/main/java">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+
+		<!-- tables 
+		<table tableName="t_deal" domainObjectName="Deal"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+		
+		<table tableName="t_deal_stage_log" domainObjectName="DealStageLog"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+		
+		<table tableName="t_deal_remark" domainObjectName="DealRemark"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+		
+		<table tableName="t_deal_remark_relation" domainObjectName="DealRemarkRelation"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+		
+		<table tableName="t_deal_action_log" domainObjectName="DealActionLog"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+		
+		<table tableName="t_deal_stage_time" domainObjectName="DealStageTime"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+		
+		<table tableName="t_deal_stage" domainObjectName="DealStage"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+		-->
+		
+		<table tableName="sys_office" domainObjectName="SysOffice"
+			enableCountByExample="false" enableSelectByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false">
+		</table>
+
+	</context>
+
+</generatorConfiguration>
