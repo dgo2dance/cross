@@ -78,8 +78,8 @@ public class CodeGenerator {
      */
     public static void genCodeByCustomModelName(String tableName, String modelName) {
         genModelAndMapper(tableName, modelName);
-        genService(tableName, modelName);
-        genController(tableName, modelName);
+     //   genService(tableName, modelName);
+     //   genController(tableName, modelName);
     }
 
 

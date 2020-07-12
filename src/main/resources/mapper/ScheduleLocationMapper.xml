@@ -15,5 +15,8 @@
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
     <result column="del_flag" jdbcType="CHAR" property="delFlag" />
     <result column="master" jdbcType="VARCHAR" property="master" />
+    <result column="place" jdbcType="VARCHAR" property="place" />
+    <result column="begTime" jdbcType="TIMESTAMP" property="begtime" />
+    <result column="endTime" jdbcType="TIMESTAMP" property="endtime" />
   </resultMap>
 </mapper>

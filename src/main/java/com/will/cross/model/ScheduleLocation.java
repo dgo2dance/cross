@@ -58,9 +58,26 @@ public class ScheduleLocation {
     private String delFlag;
 
     /**
-     * 租户ID
+     * org-ID，位置关联的组织ID
      */
     private String master;
+
+    /**
+     * 地点
+     */
+    private String place;
+
+    /**
+     * 开始时间
+     */
+    @Column(name = "begTime")
+    private Date begtime;
+
+    /**
+     * 结束时间
+     */
+    @Column(name = "endTime")
+    private Date endtime;
 
     /**
      * 获取编号
@@ -225,20 +242,74 @@ public class ScheduleLocation {
     }
 
     /**
-     * 获取租户ID
+     * 获取org-ID，位置关联的组织ID
      *
-     * @return master - 租户ID
+     * @return master - org-ID，位置关联的组织ID
      */
     public String getMaster() {
         return master;
     }
 
     /**
-     * 设置租户ID
+     * 设置org-ID，位置关联的组织ID
      *
-     * @param master 租户ID
+     * @param master org-ID，位置关联的组织ID
      */
     public void setMaster(String master) {
         this.master = master;
+    }
+
+    /**
+     * 获取地点
+     *
+     * @return place - 地点
+     */
+    public String getPlace() {
+        return place;
+    }
+
+    /**
+     * 设置地点
+     *
+     * @param place 地点
+     */
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    /**
+     * 获取开始时间
+     *
+     * @return begTime - 开始时间
+     */
+    public Date getBegtime() {
+        return begtime;
+    }
+
+    /**
+     * 设置开始时间
+     *
+     * @param begtime 开始时间
+     */
+    public void setBegtime(Date begtime) {
+        this.begtime = begtime;
+    }
+
+    /**
+     * 获取结束时间
+     *
+     * @return endTime - 结束时间
+     */
+    public Date getEndtime() {
+        return endtime;
+    }
+
+    /**
+     * 设置结束时间
+     *
+     * @param endtime 结束时间
+     */
+    public void setEndtime(Date endtime) {
+        this.endtime = endtime;
     }
 }
