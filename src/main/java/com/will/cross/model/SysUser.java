@@ -146,6 +146,12 @@ public class SysUser {
     @Column(name = "avatarUrl")
     private String avatarurl;
 
+    @Column(name = "locationId")
+    private String locationid;
+
+    @Column(name = "locationName")
+    private String locationname;
+
     /**
      * 获取编号
      *
@@ -638,5 +644,33 @@ public class SysUser {
      */
     public void setAvatarurl(String avatarurl) {
         this.avatarurl = avatarurl;
+    }
+
+    /**
+     * @return locationId
+     */
+    public String getLocationid() {
+        return locationid;
+    }
+
+    /**
+     * @param locationid
+     */
+    public void setLocationid(String locationid) {
+        this.locationid = locationid;
+    }
+
+    /**
+     * @return locationName
+     */
+    public String getLocationname() {
+        return locationname;
+    }
+
+    /**
+     * @param locationname
+     */
+    public void setLocationname(String locationname) {
+        this.locationname = locationname;
     }
 }

@@ -1,14 +1,16 @@
 package com.will.cross.controller;
 
+import com.google.common.collect.Lists;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
-import com.will.cross.model.ScheduleLocation;
-import com.will.cross.model.ScheduleLocationVO;
-import com.will.cross.model.SchedulePersonOrgRelate;
+import com.will.cross.model.*;
+import com.will.cross.service.ScheduleAreaService;
 import com.will.cross.service.ScheduleLocationService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.will.cross.service.SchedulePersonOrgRelateService;
+import com.will.cross.service.SysUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -28,6 +30,14 @@ public class ScheduleLocationController extends  BaseController{
 
 
     @Resource
+    private ScheduleAreaService scheduleAreaService;
+
+
+    @Resource
+    private SysUserService sysUserService;
+
+
+    @Resource
     private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
 
 
@@ -35,26 +45,83 @@ public class ScheduleLocationController extends  BaseController{
     public Result add(@RequestBody ScheduleLocationVO scheduleLocation) {
 
 
-        scheduleLocation.setId(UUID.randomUUID().toString());
-        scheduleLocation.setDelFlag("0");
-        scheduleLocation.setCreateBy(getUserId());
-        scheduleLocation.setCreateDate(new Date());
-        scheduleLocation.setUpdateBy(getUserId());
-        scheduleLocation.setUpdateDate(new Date());
+        // 保存 loca
+        ScheduleLocation l = new ScheduleLocation();
 
-     //   scheduleLocationService.save(scheduleLocation);
+        l.setMaster(getMasterId());
+        l.setId(UUID.randomUUID().toString());
+        l.setDelFlag("0");
+        l.setCreateBy(getUserId());
+        l.setCreateDate(new Date());
+        l.setUpdateBy(getUserId());
+        l.setUpdateDate(new Date());
+        l.setName(scheduleLocation.getLocaName());
+        scheduleLocationService.save(l);
+
+        //保存 area
+        ScheduleArea a=new ScheduleArea();
+
+        for(AreaVO s:scheduleLocation.getAreaName()){
+            a.setId(UUID.randomUUID().toString());
+            a.setLocationId(l.getId());
+            a.setLocationName(l.getName());
+            a.setName(s.getName());
+            a.setRemark(s.getRemark());
+            a.setDelFlag("0");
+            a.setStatus("0");
+            a.setCreateBy(getUserId());
+            a.setCreateDate(new Date());
+            a.setUpdateBy(getUserId());
+            a.setUpdateDate(new Date());
+            scheduleAreaService.save(a);
+
+
+        }
+
+        // save  person
+        SysUser u = new SysUser();
+        SchedulePersonOrgRelate pr=new SchedulePersonOrgRelate();
+        for(PersonVO v:scheduleLocation.getPersonName()){
+            u.setId(UUID.randomUUID().toString());
+            u.setName(v.getName());
+            u.setMobile(v.getPhone());
+            u.setEmail(v.getMail());
+
+            u.setLocationid(l.getId());
+            u.setLocationname(l.getName());
+            u.setDelFlag("0");
+            u.setCreateBy(getUserId());
+            u.setCreateDate(new Date());
+            u.setUpdateBy(getUserId());
+            u.setUpdateDate(new Date());
+            sysUserService.save(u);
+
+            // 保存人员 组织的关系
+            pr.setId(UUID.randomUUID().toString());
+            pr.setOrgId(getMasterId());
+            pr.setPersonId(u.getId());
+            u.setDelFlag("0");
+            u.setCreateBy(getUserId());
+            u.setCreateDate(new Date());
+            u.setUpdateBy(getUserId());
+            u.setUpdateDate(new Date());
+            schedulePersonOrgRelateService.save(pr);
+        }
+
         String id=scheduleLocation.getId();
-
         return ResultGenerator.genSuccessResult(id);
+
     }
 
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable String id) {
-        scheduleLocationService.deleteById(id);
+    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    public Result delete(@RequestBody ScheduleLocation scheduleLocation) {
+
+        scheduleLocation.setDelFlag("1");
+        scheduleLocationService.update(scheduleLocation);
         return ResultGenerator.genSuccessResult();
     }
 
-    @PutMapping
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
     public Result update(@RequestBody ScheduleLocation scheduleLocation) {
         scheduleLocationService.update(scheduleLocation);
         return ResultGenerator.genSuccessResult();
@@ -85,9 +152,23 @@ public class ScheduleLocationController extends  BaseController{
 
 
         Condition queryLoc=new Condition(ScheduleLocation.class);
-        queryLoc.createCriteria().andEqualTo("master",sys.getOrgId());
+        queryLoc.createCriteria().andEqualTo("master",sys.getOrgId()).andEqualTo("delFlag","0");
         List<ScheduleLocation> listLoc = scheduleLocationService.findByCondition(queryLoc);
-        PageInfo pageInfo = new PageInfo(listLoc);
+
+        List<ScheduleLocationRVO> rvo= Lists.newArrayList();
+        for(ScheduleLocation s:listLoc){
+            ScheduleLocationRVO r=new ScheduleLocationRVO();
+            BeanUtils.copyProperties( s,r);
+
+            Condition queryArea=new Condition(ScheduleArea.class);
+            queryArea.createCriteria().andEqualTo("locationId",s.getId()).andEqualTo("status","0");
+
+            List<ScheduleArea> area = scheduleAreaService.findByCondition(queryArea);
+            r.setArea(area);
+            rvo.add(r);
+        }
+
+        PageInfo pageInfo = new PageInfo(rvo);
         return ResultGenerator.genSuccessResult(pageInfo);
 
 

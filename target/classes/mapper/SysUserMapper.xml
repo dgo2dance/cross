@@ -34,5 +34,7 @@
     <result column="province" jdbcType="VARCHAR" property="province" />
     <result column="country" jdbcType="VARCHAR" property="country" />
     <result column="avatarUrl" jdbcType="VARCHAR" property="avatarurl" />
+    <result column="locationId" jdbcType="VARCHAR" property="locationid" />
+    <result column="locationName" jdbcType="VARCHAR" property="locationname" />
   </resultMap>
 </mapper>
