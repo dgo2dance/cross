@@ -5,11 +5,20 @@ import java.util.Date;
 
 @Table(name = "schedule_area")
 public class AreaVO {
+
+    public String getKeyName() {
+        return keyName;
+    }
+
+    public void setKeyName(String keyName) {
+        this.keyName = keyName;
+    }
+
     /**
      * 编号
      */
 
-    private String key_name;
+    private String keyName;
 
     /**
      * 区域名字
@@ -19,13 +28,7 @@ public class AreaVO {
 
     private String remark;
 
-    public String getKey_name() {
-        return key_name;
-    }
 
-    public void setKey_name(String key_name) {
-        this.key_name = key_name;
-    }
 
     public String getName() {
         return name;

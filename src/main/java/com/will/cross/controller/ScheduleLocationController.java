@@ -3,6 +3,7 @@ package com.will.cross.controller;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.model.ScheduleLocation;
+import com.will.cross.model.ScheduleLocationVO;
 import com.will.cross.model.SchedulePersonOrgRelate;
 import com.will.cross.service.ScheduleLocationService;
 import com.github.pagehelper.PageHelper;
@@ -30,8 +31,8 @@ public class ScheduleLocationController extends  BaseController{
     private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
 
 
-    @PostMapping
-    public Result add(@RequestBody ScheduleLocation scheduleLocation) {
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
+    public Result add(@RequestBody ScheduleLocationVO scheduleLocation) {
 
 
         scheduleLocation.setId(UUID.randomUUID().toString());
@@ -41,7 +42,7 @@ public class ScheduleLocationController extends  BaseController{
         scheduleLocation.setUpdateBy(getUserId());
         scheduleLocation.setUpdateDate(new Date());
 
-        scheduleLocationService.save(scheduleLocation);
+     //   scheduleLocationService.save(scheduleLocation);
         String id=scheduleLocation.getId();
 
         return ResultGenerator.genSuccessResult(id);
