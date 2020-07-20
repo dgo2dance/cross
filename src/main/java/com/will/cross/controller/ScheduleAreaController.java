@@ -4,38 +4,52 @@ import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.model.ScheduleArea;
 import com.will.cross.model.ScheduleAreaVO;
+import com.will.cross.model.SchedulePersonOrgRelate;
+import com.will.cross.model.ScheduleTimeTable;
 import com.will.cross.service.ScheduleAreaService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
 * Created by PualrDwade on 2020/05/28.
 */
 @RestController
 @RequestMapping("/schedule/area")
-public class ScheduleAreaController {
+public class ScheduleAreaController extends BaseController {
     @Resource
     private ScheduleAreaService scheduleAreaService;
 
-    @PostMapping
-    public Result add(@RequestBody ScheduleAreaVO scheduleArea) {
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
+    public Result add(@RequestBody ScheduleArea scheduleArea) {
 
-          System.out.println("sss");
-   //     scheduleAreaService.save(scheduleArea);
+        scheduleArea.setId(UUID.randomUUID().toString());
+        scheduleArea.setDelFlag("0");
+        scheduleArea.setCreateBy(getUserId());
+        scheduleArea.setCreateDate(new Date());
+        scheduleArea.setUpdateBy(getUserId());
+        scheduleArea.setUpdateDate(new Date());
+        scheduleAreaService.save(scheduleArea);
         return ResultGenerator.genSuccessResult();
     }
 
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable String id) {
-        scheduleAreaService.deleteById(id);
+    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    public Result delete(@RequestBody ScheduleArea scheduleArea) {
+
+
+        scheduleArea.setDelFlag("1");
+        scheduleAreaService.update(scheduleArea);
+     //   scheduleAreaService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
-    @PutMapping
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
     public Result update(@RequestBody ScheduleArea scheduleArea) {
         scheduleAreaService.update(scheduleArea);
         return ResultGenerator.genSuccessResult();
@@ -47,10 +61,17 @@ public class ScheduleAreaController {
         return ResultGenerator.genSuccessResult(scheduleArea);
     }
 
-    @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
-        List<ScheduleArea> list = scheduleAreaService.findAll();
+    @RequestMapping(value = "/listall", method = RequestMethod.POST, produces = "application/json")
+    public Result list(@RequestBody  ScheduleArea scheduleArea) {
+    //    PageHelper.startPage(page, size);
+
+        Condition query=new Condition(ScheduleArea.class);
+        String userId=getUserId();
+        query.createCriteria().andEqualTo("locationId",scheduleArea.getId()).andEqualTo("delFlag","0");
+
+        List<ScheduleArea> list = scheduleAreaService.findByCondition(query);
+
+        //   List<ScheduleArea> list = scheduleAreaService.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

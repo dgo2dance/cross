@@ -161,7 +161,7 @@ public class ScheduleLocationController extends  BaseController{
             BeanUtils.copyProperties( s,r);
 
             Condition queryArea=new Condition(ScheduleArea.class);
-            queryArea.createCriteria().andEqualTo("locationId",s.getId()).andEqualTo("status","0");
+            queryArea.createCriteria().andEqualTo("locationId",s.getId()).andEqualTo("delFlag","0");
 
             List<ScheduleArea> area = scheduleAreaService.findByCondition(queryArea);
             r.setArea(area);
