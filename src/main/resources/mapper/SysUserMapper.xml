@@ -36,5 +36,14 @@
     <result column="avatarUrl" jdbcType="VARCHAR" property="avatarurl" />
     <result column="locationId" jdbcType="VARCHAR" property="locationid" />
     <result column="locationName" jdbcType="VARCHAR" property="locationname" />
+    <result column="role" jdbcType="VARCHAR" property="role" />
+    <result column="stress" jdbcType="VARCHAR" property="stress" />
+    <result column="skill" jdbcType="VARCHAR" property="skill" />
+    <result column="concact" jdbcType="VARCHAR" property="concact" />
+    <result column="concactPerson" jdbcType="VARCHAR" property="concactperson" />
+    <result column="paytype" jdbcType="VARCHAR" property="paytype" />
+    <result column="pay" jdbcType="REAL" property="pay" />
+    <result column="otherBegin" jdbcType="TIMESTAMP" property="otherbegin" />
+    <result column="descRemark" jdbcType="VARCHAR" property="descremark" />
   </resultMap>
 </mapper>

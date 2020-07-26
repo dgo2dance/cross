@@ -70,7 +70,7 @@ public class SchedulePersonOrgRelateDTO {
     /**
      * 邮箱
      */
-    private String mail;
+    private String email;
 
     public String getType() {
         return type;
@@ -116,6 +116,14 @@ public class SchedulePersonOrgRelateDTO {
         this.currentUserFlag = currentUserFlag;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     /**
      * openid
      */
@@ -137,13 +145,6 @@ public class SchedulePersonOrgRelateDTO {
         this.phone = phone;
     }
 
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
 
 
     /**
@@ -386,7 +387,213 @@ public class SchedulePersonOrgRelateDTO {
         this.orgName = orgName;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getAvatarurl() {
+        return avatarurl;
+    }
+
+    public void setAvatarurl(String avatarurl) {
+        this.avatarurl = avatarurl;
+    }
+
+    public String getLocationid() {
+        return locationid;
+    }
+
+    public void setLocationid(String locationid) {
+        this.locationid = locationid;
+    }
+
+    public String getLocationname() {
+        return locationname;
+    }
+
+    public void setLocationname(String locationname) {
+        this.locationname = locationname;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getStress() {
+        return stress;
+    }
+
+    public void setStress(String stress) {
+        this.stress = stress;
+    }
+
+    public String getSkill() {
+        return skill;
+    }
+
+    public void setSkill(String skill) {
+        this.skill = skill;
+    }
+
+    public String getConcact() {
+        return concact;
+    }
+
+    public void setConcact(String concact) {
+        this.concact = concact;
+    }
+
+    public String getConcactperson() {
+        return concactperson;
+    }
+
+    public void setConcactperson(String concactperson) {
+        this.concactperson = concactperson;
+    }
+
+    public String getPaytype() {
+        return paytype;
+    }
+
+    public void setPaytype(String paytype) {
+        this.paytype = paytype;
+    }
+
+    public Float getPay() {
+        return pay;
+    }
+
+    public void setPay(Float pay) {
+        this.pay = pay;
+    }
+
+    public Date getOtherbegin() {
+        return otherbegin;
+    }
+
+    public void setOtherbegin(Date otherbegin) {
+        this.otherbegin = otherbegin;
+    }
+
+    public String getDescremark() {
+        return descremark;
+    }
+
+    public void setDescremark(String descremark) {
+        this.descremark = descremark;
+    }
+
+    private String nickname;
+
+    private String gender;
+
+    private String language;
+
+    private String city;
+
+    private String province;
+
+    private String country;
+
+    private String avatarurl;
+
+    private String locationid;
+
+    private String locationname;
+
+    /**
+     * 0管理员 1一般员工
+     */
+    private String role;
+
+    /**
+     * 07/24  1每周最多工作24小时
+     */
+    private String stress;
+
+    /**
+     * 技能
+     */
+    private String skill;
+
+    /**
+     * 紧急联系方式
+     */
+    private String concact;
+
+    /**
+     * 紧急联系人
+     */
+    @Column(name = "concactPerson")
+    private String concactperson;
+
+    /**
+     * 0 按小时 1 按天 2固定
+     */
+    private String paytype;
+
+    /**
+     * 支付额度
+     */
+    private Float pay;
+
+    /**
+     * 聘任起始时间
+     */
+    private Date otherbegin;
+
+    /**
+     * 描述
+     */
+    private String descremark;
 
 
 }

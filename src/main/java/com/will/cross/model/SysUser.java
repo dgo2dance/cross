@@ -153,6 +153,54 @@ public class SysUser {
     private String locationname;
 
     /**
+     * 0管理员 1一般员工
+     */
+    private String role;
+
+    /**
+     * 07/24  1每周最多工作24小时
+     */
+    private String stress;
+
+    /**
+     * 技能
+     */
+    private String skill;
+
+    /**
+     * 紧急联系方式
+     */
+    private String concact;
+
+    /**
+     * 紧急联系人
+     */
+    @Column(name = "concactPerson")
+    private String concactperson;
+
+    /**
+     * 0 按小时 1 按天 2固定
+     */
+    private String paytype;
+
+    /**
+     * 支付额度
+     */
+    private Float pay;
+
+    /**
+     * 聘任起始时间
+     */
+    @Column(name = "otherBegin")
+    private Date otherbegin;
+
+    /**
+     * 描述
+     */
+    @Column(name = "descRemark")
+    private String descremark;
+
+    /**
      * 获取编号
      *
      * @return id - 编号
@@ -672,5 +720,167 @@ public class SysUser {
      */
     public void setLocationname(String locationname) {
         this.locationname = locationname;
+    }
+
+    /**
+     * 获取0管理员 1一般员工
+     *
+     * @return role - 0管理员 1一般员工
+     */
+    public String getRole() {
+        return role;
+    }
+
+    /**
+     * 设置0管理员 1一般员工
+     *
+     * @param role 0管理员 1一般员工
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    /**
+     * 获取07/24  1每周最多工作24小时
+     *
+     * @return stress - 07/24  1每周最多工作24小时
+     */
+    public String getStress() {
+        return stress;
+    }
+
+    /**
+     * 设置07/24  1每周最多工作24小时
+     *
+     * @param stress 07/24  1每周最多工作24小时
+     */
+    public void setStress(String stress) {
+        this.stress = stress;
+    }
+
+    /**
+     * 获取技能
+     *
+     * @return skill - 技能
+     */
+    public String getSkill() {
+        return skill;
+    }
+
+    /**
+     * 设置技能
+     *
+     * @param skill 技能
+     */
+    public void setSkill(String skill) {
+        this.skill = skill;
+    }
+
+    /**
+     * 获取紧急联系方式
+     *
+     * @return concact - 紧急联系方式
+     */
+    public String getConcact() {
+        return concact;
+    }
+
+    /**
+     * 设置紧急联系方式
+     *
+     * @param concact 紧急联系方式
+     */
+    public void setConcact(String concact) {
+        this.concact = concact;
+    }
+
+    /**
+     * 获取紧急联系人
+     *
+     * @return concactPerson - 紧急联系人
+     */
+    public String getConcactperson() {
+        return concactperson;
+    }
+
+    /**
+     * 设置紧急联系人
+     *
+     * @param concactperson 紧急联系人
+     */
+    public void setConcactperson(String concactperson) {
+        this.concactperson = concactperson;
+    }
+
+    /**
+     * 获取0 按小时 1 按天 2固定
+     *
+     * @return paytype - 0 按小时 1 按天 2固定
+     */
+    public String getPaytype() {
+        return paytype;
+    }
+
+    /**
+     * 设置0 按小时 1 按天 2固定
+     *
+     * @param paytype 0 按小时 1 按天 2固定
+     */
+    public void setPaytype(String paytype) {
+        this.paytype = paytype;
+    }
+
+    /**
+     * 获取支付额度
+     *
+     * @return pay - 支付额度
+     */
+    public Float getPay() {
+        return pay;
+    }
+
+    /**
+     * 设置支付额度
+     *
+     * @param pay 支付额度
+     */
+    public void setPay(Float pay) {
+        this.pay = pay;
+    }
+
+    /**
+     * 获取聘任起始时间
+     *
+     * @return otherBegin - 聘任起始时间
+     */
+    public Date getOtherbegin() {
+        return otherbegin;
+    }
+
+    /**
+     * 设置聘任起始时间
+     *
+     * @param otherbegin 聘任起始时间
+     */
+    public void setOtherbegin(Date otherbegin) {
+        this.otherbegin = otherbegin;
+    }
+
+    /**
+     * 获取描述
+     *
+     * @return descRemark - 描述
+     */
+    public String getDescremark() {
+        return descremark;
+    }
+
+    /**
+     * 设置描述
+     *
+     * @param descremark 描述
+     */
+    public void setDescremark(String descremark) {
+        this.descremark = descremark;
     }
 }

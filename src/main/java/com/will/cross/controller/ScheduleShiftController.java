@@ -51,9 +51,38 @@ public class ScheduleShiftController extends BaseController{
         return ResultGenerator.genSuccessResult();
     }
 
+    @RequestMapping(value = "/addWeb", method = RequestMethod.POST, produces = "application/json")
+    public Result addWeb(@RequestBody ScheduleShift scheduleShift) {
+        scheduleShift.setId(UUID.randomUUID().toString());
+        scheduleShift.setCreateBy(getUserId());
+        scheduleShift.setCreateDate(new Date());
+        scheduleShift.setUpdateBy(getUserId());
+        scheduleShift.setUpdateDate(new Date());
+        scheduleShift.setMaster(getMasterId());
+
+
+        //设置状态，ture-->0    false-->0
+        if("true".equals(scheduleShift.getStatus())){
+            scheduleShift.setStatus("0");
+        } else{
+            scheduleShift.setStatus("1");
+        }
+
+
+        scheduleShiftService.save(scheduleShift);
+        return ResultGenerator.genSuccessResult();
+    }
+
+
     @RequestMapping(value = "/delete", method = RequestMethod.GET, produces = "application/json")
     public Result delete(@RequestParam(required = true,value = "id")String id) {
         scheduleShiftService.deleteById(id);
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @RequestMapping(value = "/deleteWeb", method = RequestMethod.POST, produces = "application/json")
+    public Result deleteWeb(@RequestBody ScheduleShift scheduleShift) {
+        scheduleShiftService.deleteById(scheduleShift.getId());
         return ResultGenerator.genSuccessResult();
     }
 

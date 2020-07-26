@@ -110,15 +110,17 @@ public class SysUserController extends BaseController{
         SysUser sysUser =new SysUser();
         for(PersonVO svo:sysUservo.getPerson()) {
             sysUser.setId(UUID.randomUUID().toString());
-            sysUser.setOpenid(getOpenId());
+    //        sysUser.setOpenid(getOpenId());
             sysUser.setDelFlag("0");
             sysUser.setMobile(svo.getPhone());
+            sysUser.setPhone(svo.getPhone());
             sysUser.setEmail(svo.getMail());
             sysUser.setName(svo.getName());
+            sysUser.setOfficeId(getMasterId());
             // 判断当前用户是否存在，已存在则不创建，更新
             Condition query = new Condition(SysUser.class);
 
-            query.createCriteria().andEqualTo("openid", getOpenId());
+            query.createCriteria().andEqualTo("phone", svo.getPhone());
 
             List<SysUser> list = sysUserService.findByCondition(query);
 
@@ -131,7 +133,7 @@ public class SysUserController extends BaseController{
 
             Condition queryt = new Condition(SysUser.class);
 
-            queryt.createCriteria().andEqualTo("openid", getOpenId());
+            queryt.createCriteria().andEqualTo("phone", svo.getPhone());
 
             List<SysUser> listt = sysUserService.findByCondition(queryt);
 
@@ -141,26 +143,28 @@ public class SysUserController extends BaseController{
             //查询用户，如果有用户，则返回，如果无用户，则创建用户；
             Condition querys = new Condition(SchedulePersonOrgRelate.class);
 
-            querys.createCriteria().andEqualTo("personId", listt.get(0).getId()).andEqualTo("orgId", getMasterId());
-
-            List<SchedulePersonOrgRelate> lists = schedulePersonOrgRelateService.findByCondition(querys);
+//            querys.createCriteria().andEqualTo("personId", listt.get(0).getId()).andEqualTo("orgId", getMasterId());
+//
+//            List<SchedulePersonOrgRelate> lists = schedulePersonOrgRelateService.findByCondition(querys);
 
             SchedulePersonOrgRelate m = new SchedulePersonOrgRelate();
             m.setId(UUID.randomUUID().toString());
-            m.setPersonId(listt.get(0).getId());
+            m.setPersonId(sysUser.getId());
             m.setOrgId(sysUser.getOfficeId());
             m.setOrgName(sysOffice.getName());
             m.setPersonName(sysUser.getName());
             m.setStatus("0");
             m.setIsAdmin("1");
+            schedulePersonOrgRelateService.save(m);
+            /*
             if (lists.size() < 1) {
                 //添加人员组织关系
-                schedulePersonOrgRelateService.save(m);
+
             } else {
                 m.setId(lists.get(0).getId());
                 schedulePersonOrgRelateService.update(m);
             }
-
+               */
         }
         return ResultGenerator.genSuccessResult();
 
@@ -230,6 +234,7 @@ public class SysUserController extends BaseController{
         schedulePersonOrgRelate.setPersonName(m.getName());
 
 
+        BeanUtils.copyProperties(m,sysUser);
         sysUser.setId(m.getPersonId());
         sysUser.setPhone(m.getPhone());
         sysUser.setName(m.getName());
@@ -375,7 +380,7 @@ public class SysUserController extends BaseController{
 
             if(tt.size()>0){
                 m.setPhone(tt.get(0).getPhone());
-                m.setMail(tt.get(0).getEmail());
+                m.setEmail(tt.get(0).getEmail());
                 m.setName(tt.get(0).getName());
                 m.setOpenid(tt.get(0).getOpenid());
                 if(getUserId().equals(tt.get(0).getId())){
@@ -392,6 +397,71 @@ public class SysUserController extends BaseController{
 //        query.createCriteria().andEqualTo("officeId",sysOffice.get(0).getId());
 
  //       List<SysUser> list = sysUserService.findByCondition(query);
+        return ResultGenerator.genSuccessResult(schedulePersonOrgRelateDTO);
+    }
+
+
+
+
+    @ApiOperation(value = "获取组织用户", notes = "")
+    @RequestMapping(value = "/listUserWeb", method = RequestMethod.GET, produces = "application/json")
+    public Result listUserWeb(){
+
+        List<SchedulePersonOrgRelateDTO> schedulePersonOrgRelateDTO= Lists.newArrayList();
+        String orgId=getMasterId();
+
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+        query.createCriteria().andEqualTo("orgId",orgId);
+
+        List<SchedulePersonOrgRelate> sys= schedulePersonOrgRelateService.findByCondition(query);
+
+        //获取所有人员的信息
+        List<String> personId = sys.stream().map(s -> s.getPersonId()).collect(Collectors.toList());
+
+        personId = personId.stream().distinct().collect(Collectors.toList());
+
+        String personIds = "";
+        for (String ss : personId)
+        {
+            personIds += "'" +ss +"'" +  ",";
+        }
+        if(personIds.length()>1) {
+            personIds = personIds.substring(0, personIds.length() - 1);
+        }
+
+        //   String shiftIds = shiftId.stream().collect(Collectors.joining(","));
+        List<SysUser> user=new ArrayList<>();
+        if(personIds.length()>0) {
+            user = sysUserService.findByIds(personIds);
+        }
+
+        for(SchedulePersonOrgRelate sor:sys){
+            SchedulePersonOrgRelateDTO m =new SchedulePersonOrgRelateDTO();
+
+            List<SysUser> tt= user.stream().filter(e-> e.getId().equals(sor.getPersonId())).collect(Collectors.toList());
+
+            if(tt.size()>0){
+                BeanUtils.copyProperties( tt.get(0),m);
+                BeanUtils.copyProperties( sor,m);
+
+                m.setPhone(tt.get(0).getPhone());
+                m.setEmail(tt.get(0).getEmail());
+                m.setName(tt.get(0).getName());
+                m.setOpenid(tt.get(0).getOpenid());
+                if(getUserId().equals(tt.get(0).getId())){
+                    m.setCurrentUserFlag("0");
+                } else {
+                    m.setCurrentUserFlag("1");
+                }
+            }
+
+            schedulePersonOrgRelateDTO.add(m);
+        }
+        //  PageHelper.startPage(page, size);
+//        Condition query=new Condition(SysUser.class);
+//        query.createCriteria().andEqualTo("officeId",sysOffice.get(0).getId());
+
+        //       List<SysUser> list = sysUserService.findByCondition(query);
         return ResultGenerator.genSuccessResult(schedulePersonOrgRelateDTO);
     }
 
