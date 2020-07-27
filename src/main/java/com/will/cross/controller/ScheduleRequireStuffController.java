@@ -20,19 +20,19 @@ public class ScheduleRequireStuffController {
     @Resource
     private ScheduleRequireStuffService scheduleRequireStuffService;
 
-    @PostMapping
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
     public Result add(@RequestBody ScheduleRequireStuff scheduleRequireStuff) {
         scheduleRequireStuffService.save(scheduleRequireStuff);
         return ResultGenerator.genSuccessResult();
     }
 
-    @DeleteMapping("/{id}")
+    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
     public Result delete(@PathVariable String id) {
         scheduleRequireStuffService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
-    @PutMapping
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
     public Result update(@RequestBody ScheduleRequireStuff scheduleRequireStuff) {
         scheduleRequireStuffService.update(scheduleRequireStuff);
         return ResultGenerator.genSuccessResult();
@@ -44,7 +44,7 @@ public class ScheduleRequireStuffController {
         return ResultGenerator.genSuccessResult(scheduleRequireStuff);
     }
 
-    @GetMapping
+    @RequestMapping(value = "/list", method = RequestMethod.POST, produces = "application/json")
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
         List<ScheduleRequireStuff> list = scheduleRequireStuffService.findAll();
