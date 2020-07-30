@@ -26,13 +26,13 @@ public class ScheduleRequireStuffController {
         return ResultGenerator.genSuccessResult();
     }
 
-    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/del", method = RequestMethod.POST, produces = "application/json")
     public Result delete(@PathVariable String id) {
         scheduleRequireStuffService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/up", method = RequestMethod.POST, produces = "application/json")
     public Result update(@RequestBody ScheduleRequireStuff scheduleRequireStuff) {
         scheduleRequireStuffService.update(scheduleRequireStuff);
         return ResultGenerator.genSuccessResult();

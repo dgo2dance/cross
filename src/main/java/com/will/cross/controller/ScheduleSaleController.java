@@ -20,19 +20,19 @@ public class ScheduleSaleController {
     @Resource
     private ScheduleSaleService scheduleSaleService;
 
-    @PostMapping
+    @RequestMapping(value = "/addSale", method = RequestMethod.POST, produces = "application/json")
     public Result add(@RequestBody ScheduleSale scheduleSale) {
         scheduleSaleService.save(scheduleSale);
         return ResultGenerator.genSuccessResult();
     }
 
-    @DeleteMapping("/{id}")
+    @RequestMapping(value = "/delSale", method = RequestMethod.POST, produces = "application/json")
     public Result delete(@PathVariable String id) {
         scheduleSaleService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
-    @PutMapping
+    @RequestMapping(value = "/upSale", method = RequestMethod.POST, produces = "application/json")
     public Result update(@RequestBody ScheduleSale scheduleSale) {
         scheduleSaleService.update(scheduleSale);
         return ResultGenerator.genSuccessResult();
