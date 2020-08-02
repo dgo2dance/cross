@@ -83,10 +83,11 @@ public class ScheduleSaleController  extends BaseController{
 //        String masterid=getMasterId();
 //        query.createCriteria().andEqualTo("master",masterid);
 //        List<ScheduleShift> list = scheduleShiftService.findByCondition(query);
-//
+//        以树的形式返回数据，在前端判断展示;
+
         List<ScheduleSale> list = scheduleSaleService.findAll();
         PageInfo pageInfo = new PageInfo(list);
-       return ResultGenerator.genSuccessResult(pageInfo);
+        return ResultGenerator.genSuccessResult(pageInfo);
 //
 
 
