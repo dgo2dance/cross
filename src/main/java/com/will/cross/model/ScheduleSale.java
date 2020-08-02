@@ -82,6 +82,24 @@ public class ScheduleSale {
     private String delFlag;
 
     /**
+     * 开始时间
+     */
+    @Column(name = "beg_time")
+    private Date begTime;
+
+    /**
+     * 结束时间
+     */
+    @Column(name = "end_time")
+    private Date endTime;
+
+    /**
+     * 组织ID
+     */
+    @Column(name = "master_id")
+    private String masterId;
+
+    /**
      * 获取编号
      *
      * @return id - 编号
@@ -313,5 +331,59 @@ public class ScheduleSale {
      */
     public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
+    }
+
+    /**
+     * 获取开始时间
+     *
+     * @return beg_time - 开始时间
+     */
+    public Date getBegTime() {
+        return begTime;
+    }
+
+    /**
+     * 设置开始时间
+     *
+     * @param begTime 开始时间
+     */
+    public void setBegTime(Date begTime) {
+        this.begTime = begTime;
+    }
+
+    /**
+     * 获取结束时间
+     *
+     * @return end_time - 结束时间
+     */
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    /**
+     * 设置结束时间
+     *
+     * @param endTime 结束时间
+     */
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    /**
+     * 获取组织ID
+     *
+     * @return master_id - 组织ID
+     */
+    public String getMasterId() {
+        return masterId;
+    }
+
+    /**
+     * 设置组织ID
+     *
+     * @param masterId 组织ID
+     */
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
     }
 }

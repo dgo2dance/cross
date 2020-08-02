@@ -18,5 +18,8 @@
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
     <result column="del_flag" jdbcType="CHAR" property="delFlag" />
+    <result column="beg_time" jdbcType="TIMESTAMP" property="begTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="master_id" jdbcType="VARCHAR" property="masterId" />
   </resultMap>
 </mapper>

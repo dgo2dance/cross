@@ -567,7 +567,7 @@ public class ScheduleTimeTableController extends BaseController{
      */
     @ApiOperation(value = "自动", notes = "eee")
     @RequestMapping(value = "/solve", method = RequestMethod.POST, produces = "application/json")
-    public Result getTablePC(@RequestBody ScheduleTimeTable scheduleTimeTable) {
+    public Result solve(@RequestBody ScheduleTimeTable scheduleTimeTable) {
 
 
         // PageHelper.startPage(page, size);

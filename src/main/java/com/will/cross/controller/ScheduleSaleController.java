@@ -2,21 +2,25 @@ package com.will.cross.controller;
 
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
+import com.will.cross.dto.ScheduleSaleDTO;
 import com.will.cross.model.ScheduleSale;
 import com.will.cross.service.ScheduleSaleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.will.cross.util.DateUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
 * Created by PualrDwade on 2020/07/26.
 */
 @RestController
 @RequestMapping("/schedule/sale")
-public class ScheduleSaleController {
+public class ScheduleSaleController  extends BaseController{
     @Resource
     private ScheduleSaleService scheduleSaleService;
 	
@@ -28,22 +32,22 @@ public class ScheduleSaleController {
 		ScheduleSale sv= new ScheduleSale();
 
 		// 循环设置sale数据，并保存
-		for(int i=0;i<=scheduleSale.getTableDate.split(,)){
+        String[] tableDate=scheduleSale.getTableData().split(",");
+		for(int i=0;i<=scheduleSale.getTableData().split(",").length;i=i+25){
 			
 			sv.setId(UUID.randomUUID().toString());
-			sv.setAmount();
-            sv.setBeginDate();
-            sv.setEndDate();
-            sv.setType();
+			sv.setAmount(Double.valueOf(tableDate[i]));
+            sv.setBegTime(DateUtil.toDate(tableDate[i]));
+            sv.setEndTime(DateUtil.toDate(tableDate[i]));
             sv.setCreateBy(getOpenId());
             sv.setCreateDate(new Date());
             sv.setUpdateBy(getOpenId());
             sv.setUpdateDate(new Date());
-            sv.setMaster(getMasterId());
-			
-			i=i+25;
-			
-			scheduleSaleService.save(scheduleSale);
+            sv.setMasterId(getMasterId());
+            sv.setLocationId("");
+            sv.setAreaId("");
+
+			scheduleSaleService.save(sv);
 
 		}
 		
@@ -75,15 +79,15 @@ public class ScheduleSaleController {
      
 
              //  PageHelper.startPage(page, size);
-        Condition query=new Condition(ScheduleSale.class);
-        String masterid=getMasterId();
-        query.createCriteria().andEqualTo("master",masterid);
-        List<ScheduleShift> list = scheduleShiftService.findByCondition(query);
-
+//        Condition query=new Condition(ScheduleSale.class);
+//        String masterid=getMasterId();
+//        query.createCriteria().andEqualTo("master",masterid);
+//        List<ScheduleShift> list = scheduleShiftService.findByCondition(query);
+//
         List<ScheduleSale> list = scheduleSaleService.findAll();
         PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
-
+       return ResultGenerator.genSuccessResult(pageInfo);
+//
 
 
     }

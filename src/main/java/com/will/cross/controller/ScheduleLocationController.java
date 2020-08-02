@@ -13,7 +13,7 @@ import com.will.cross.service.SysUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
-
+import com.will.cross.dto.LocaAreaTreeDTO;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -167,6 +167,69 @@ public class ScheduleLocationController extends  BaseController{
             r.setArea(area);
             rvo.add(r);
         }
+
+        PageInfo pageInfo = new PageInfo(rvo);
+        return ResultGenerator.genSuccessResult(pageInfo);
+
+
+    }
+
+
+    /**
+     * 获取当前激活企业下的位置，地点,区域；
+     * @param page
+     * @param size
+     * @return
+     */
+    @RequestMapping(value = "/listLocaArea", method = RequestMethod.GET, produces = "application/json")
+    public Result listLocaArea(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+        PageHelper.startPage(page, size);
+
+        Condition query=new Condition(SchedulePersonOrgRelate.class);
+        String userId=getUserId();
+        query.createCriteria().andEqualTo("personId",userId).andEqualTo("status","0");
+
+        List<SchedulePersonOrgRelate> list = schedulePersonOrgRelateService.findByCondition(query);
+        SchedulePersonOrgRelate sys=list.get(0);
+
+
+        Condition queryLoc=new Condition(ScheduleLocation.class);
+        queryLoc.createCriteria().andEqualTo("master",sys.getOrgId()).andEqualTo("delFlag","0");
+        List<ScheduleLocation> listLoc = scheduleLocationService.findByCondition(queryLoc);
+
+
+        List<LocaAreaTreeDTO> rvo= Lists.newArrayList();
+        LocaAreaTreeDTO rt=new LocaAreaTreeDTO();
+        if(listLoc.size()>0){
+            rt.setTitle("所有");
+            rt.setValue("000000");
+            rvo.add(rt);
+        }
+
+        for(ScheduleLocation s:listLoc){
+            LocaAreaTreeDTO r=new LocaAreaTreeDTO();
+
+            r.setTitle(s.getName());
+            r.setValue(s.getId());
+
+            Condition queryArea=new Condition(ScheduleArea.class);
+            queryArea.createCriteria().andEqualTo("locationId",s.getId()).andEqualTo("delFlag","0");
+
+            List<ScheduleArea> area = scheduleAreaService.findByCondition(queryArea);
+
+            List<LocaAreaTreeDTO> child= Lists.newArrayList();
+            for(ScheduleArea m:area){
+                LocaAreaTreeDTO n=new LocaAreaTreeDTO();
+                n.setTitle(m.getName());
+                n.setValue(m.getId());
+                child.add(n);
+            }
+
+            r.setChildren(child);
+            rvo.add(r);
+        }
+
+
 
         PageInfo pageInfo = new PageInfo(rvo);
         return ResultGenerator.genSuccessResult(pageInfo);
