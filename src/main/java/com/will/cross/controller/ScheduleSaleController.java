@@ -74,8 +74,8 @@ public class ScheduleSaleController  extends BaseController{
 	
 	
     // 查询数据并展示
-    @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    @RequestMapping(value = "/getSale", method = RequestMethod.POST, produces = "application/json")
+    public Result list(@RequestParam(@RequestBody ScheduleSale scheduleSale) Integer size) {
      
 
              //  PageHelper.startPage(page, size);
@@ -83,12 +83,108 @@ public class ScheduleSaleController  extends BaseController{
 //        String masterid=getMasterId();
 //        query.createCriteria().andEqualTo("master",masterid);
 //        List<ScheduleShift> list = scheduleShiftService.findByCondition(query);
-//        以树的形式返回数据，在前端判断展示;
+//        以树的形式返回数据，在前端判断展示;   data  example
+
+//         this.data = [
+//          ["", "09:00AM", "10:00AM", "11:00AM", "12:00AM", "13:00AM", "14:00AM", "15:00AM", "16:00AM", "17:00AM", "18:00AM", "19:00AM", "20:00AM", "21:00AM", "22:00AM", "23:00AM", "24:00AM"],
+//          ["Sales", 10, 11, 12, 13],
+//          ["Aadmin", 20, 11, 14, 13],
+//          ["Bars", 30, 15, 12, 13]
+//        ];
 
         List<ScheduleSale> list = scheduleSaleService.findAll();
+
+        // 返回结果集；
+        List<List<String>> returnData =  Lists.newArrayList();
+        // 加入头部  string
+        List<String> head = ["","", "09:00AM", "10:00AM", "11:00AM", "12:00AM", "13:00AM", "14:00AM", "15:00AM", "16:00AM", "17:00AM", "18:00AM", "19:00AM", "20:00AM", "21:00AM", "22:00AM", "23:00AM", "24:00AM"],
+        returnData.add(head);
+
+
+        // 查询当前用户下的所有Location
+        Condition queryLoc=new Condition(ScheduleLocation.class);
+        queryLoc.createCriteria().andEqualTo("master",getMasterId()).andEqualTo("delFlag","0");
+        List<ScheduleLocation> listLoc = scheduleLocationService.findByCondition(queryLoc);
+
+
+        List<LocaAreaTreeDTO> rvo= Lists.newArrayList();
+        LocaAreaTreeDTO rt=new LocaAreaTreeDTO();
+        if(listLoc.size()>0){
+            rt.setTitle("所有");
+            rt.setValue("000000");
+            rvo.add(rt);
+        }
+
+        for(ScheduleLocation s:listLoc){
+
+            if("000000".equals(scheduleSale.getLocationId())
+                ||(s.getLocationId()).equals(scheduleSale.getLocationId()){
+
+             // 查询所有区域   
+            Condition queryArea=new Condition(ScheduleArea.class);
+            queryArea.createCriteria().andEqualTo("locationId",s.getId()).andEqualTo("delFlag","0");
+
+            List<ScheduleArea> area = scheduleAreaService.findByCondition(queryArea);
+
+             for(ScheduleArea m:area){
+
+                   // 根据位置 区域  查询  amount
+
+                Condition querySale=new Condition(ScheduleSale.class);
+                querySale.createCriteria().andEqualTo("locationId",s.getId()).andEqualTo("areaId",m.getId()).andEqualTo("delFlag","0")
+                   .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleSale.getEndDate()))
+                   .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
+
+                List<ScheduleSale> list = scheduleSaleService.findByCondition(querySale);
+
+                //拼装List
+
+                List<String> tmp=Lists.newArrayList();
+
+                tmp.add(m.getId());
+                tmp.add(s.getName()+m.getName());
+
+                // 拼接入各个时间段的内容
+                for(int i=9;i++;i<=24){
+
+                      List<String> u=list.stream().filter(e->e.getBeginDate().getHours().equalsi) )
+                        .collect(Collectors.toList());
+        //            Date date = new Date();
+        //            int hours = date.getHours();
+                    if(u.size()>0){
+                     tmp.add(u[0].getAmout())
+                    }else{
+                    tmp.add("")
+                     }
+                }
+
+                for(int i=1;i++;i<=8){
+                        List<String> u=list.stream().filter(e->e.getBeginDate().getHours().equalsi) )
+                        .collect(Collectors.toList());
+        //            Date date = new Date();
+        //            int hours = date.getHours();
+                    if(u.size()>0){
+                     tmp.add(u[0].getAmout())
+                    }else{
+                    tmp.add("")
+                     }
+
+                }
+
+
+
+                     
+                    }
+         
+                }
+        
+            }
+
+           
+
+
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
-//
 
 
     }
