@@ -1,19 +1,27 @@
 package com.will.cross.controller;
 
+import com.google.common.collect.Lists;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
 import com.will.cross.dto.ScheduleSaleDTO;
+import com.will.cross.model.ScheduleArea;
+import com.will.cross.model.ScheduleLocation;
 import com.will.cross.model.ScheduleSale;
+import com.will.cross.service.ScheduleAreaService;
+import com.will.cross.service.ScheduleLocationService;
 import com.will.cross.service.ScheduleSaleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.will.cross.util.DateUtil;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
 * Created by PualrDwade on 2020/07/26.
@@ -23,8 +31,14 @@ import java.util.UUID;
 public class ScheduleSaleController  extends BaseController{
     @Resource
     private ScheduleSaleService scheduleSaleService;
-	
-	
+
+    @Resource
+    private ScheduleLocationService scheduleLocationService;
+
+    @Resource
+    private ScheduleAreaService scheduleAreaService;
+
+
 	// 录入销售数据；
     @RequestMapping(value = "/addSale", method = RequestMethod.POST, produces = "application/json")
     public Result add(@RequestBody ScheduleSaleDTO scheduleSale) {
@@ -40,9 +54,9 @@ public class ScheduleSaleController  extends BaseController{
 
 
                 Condition querySale=new Condition(ScheduleSale.class);
-                querySale.createCriteria().andEqualTo("areaId",m.getId()).andEqualTo("delFlag","0")
-                   .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleSale.getEndDate()))
-                   .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
+                querySale.createCriteria().andEqualTo("areaId",areaId).andEqualTo("delFlag","0")
+                   .andLessThanOrEqualTo("beginDate",scheduleSale.getDate())
+                   .andGreaterThanOrEqualTo("beginDate",scheduleSale.getDate());
 
                 List<ScheduleSale> list = scheduleSaleService.findByCondition(querySale);
 
@@ -56,7 +70,6 @@ public class ScheduleSaleController  extends BaseController{
 
 
 		// 循环设置sale数据，并保存
-        String[] tableDate=scheduleSale.getTableData().split(",");
 		for(int i=0;i<=scheduleSale.getTableData().split(",").length;i=i+25){
 			
 			sv.setId(UUID.randomUUID().toString());
@@ -99,7 +112,7 @@ public class ScheduleSaleController  extends BaseController{
 	
     // 查询数据并展示
     @RequestMapping(value = "/getSale", method = RequestMethod.POST, produces = "application/json")
-    public Result list(@RequestParam(@RequestBody ScheduleSale scheduleSale) Integer size) {
+    public Result list(@RequestBody ScheduleSale scheduleSale)  {
      
 
              //  PageHelper.startPage(page, size);
@@ -121,7 +134,9 @@ public class ScheduleSaleController  extends BaseController{
         // 返回结果集；
         List<List<String>> returnData =  Lists.newArrayList();
         // 加入头部  string
-        List<String> head = ["","", "09:00AM", "10:00AM", "11:00AM", "12:00AM", "13:00AM", "14:00AM", "15:00AM", "16:00AM", "17:00AM", "18:00AM", "19:00AM", "20:00AM", "21:00AM", "22:00AM", "23:00AM", "24:00AM"],
+        List<String> head = Arrays.asList(new String[]{"", "", "09:00AM", "10:00AM", "11:00AM", "12:00AM", "13:00AM", "14:00AM",
+                "15:00AM", "16:00AM", "17:00AM", "18:00AM", "19:00AM", "20:00AM", "21:00AM",
+                "22:00AM", "23:00AM", "24:00AM"});
         returnData.add(head);
 
 
@@ -131,18 +146,10 @@ public class ScheduleSaleController  extends BaseController{
         List<ScheduleLocation> listLoc = scheduleLocationService.findByCondition(queryLoc);
 
 
-        List<LocaAreaTreeDTO> rvo= Lists.newArrayList();
-        LocaAreaTreeDTO rt=new LocaAreaTreeDTO();
-        if(listLoc.size()>0){
-            rt.setTitle("所有");
-            rt.setValue("000000");
-            rvo.add(rt);
-        }
-
         for(ScheduleLocation s:listLoc){
 
             if("000000".equals(scheduleSale.getLocationId())
-                ||(s.getLocationId()).equals(scheduleSale.getLocationId()){
+                ||(s.getId()).equals(scheduleSale.getLocationId())){
 
              // 查询所有区域   
             Condition queryArea=new Condition(ScheduleArea.class);
@@ -156,10 +163,10 @@ public class ScheduleSaleController  extends BaseController{
 
                 Condition querySale=new Condition(ScheduleSale.class);
                 querySale.createCriteria().andEqualTo("locationId",s.getId()).andEqualTo("areaId",m.getId()).andEqualTo("delFlag","0")
-                   .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleSale.getEndDate()))
-                   .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
+                   .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleSale.getBegTime()))
+                   .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleSale.getEndTime()));
 
-                List<ScheduleSale> list = scheduleSaleService.findByCondition(querySale);
+                List<ScheduleSale> listSale = scheduleSaleService.findByCondition(querySale);
 
                 //拼装List
 
@@ -169,43 +176,45 @@ public class ScheduleSaleController  extends BaseController{
                 tmp.add(s.getName()+m.getName());
 
                 // 拼接入各个时间段的内容
-                for(int i=9;i++;i<=24){
+                for(int i=9;i<=24;i++){
 
-                      List<String> u=list.stream().filter(e->e.getBeginDate().getHours().equalsi) )
-                        .collect(Collectors.toList());
-        //            Date date = new Date();
-        //            int hours = date.getHours();
-                    if(u.size()>0){
-                     tmp.add(u[0].getAmout())
-                    }else{
-                    tmp.add("")
-                     }
-                }
-
-                for(int i=1;i++;i<=8){
-                        List<String> u=list.stream().filter(e->e.getBeginDate().getHours().equalsi) )
-                        .collect(Collectors.toList());
-        //            Date date = new Date();
-        //            int hours = date.getHours();
-                    if(u.size()>0){
-                     tmp.add(u[0].getAmout())
-                    }else{
-                    tmp.add("")
-                     }
+                    Boolean flag=false;
+                    for(ScheduleSale u:list){
+                        if(u.getBegTime().getHours()==i){
+                            flag=Boolean.TRUE;
+                            tmp.add(String.valueOf(u.getAmount()));
+                        }
+                    }
+                    //            Date date = new Date();
+                    //            int hours = date.getHours();
+                    if(!flag){
+                        tmp.add("");
+                    }
 
                 }
 
+                for(int i=1;i<=8;i++){
 
+                    Boolean flag=false;
+                    for(ScheduleSale u:list){
+                        if(u.getBegTime().getHours()==i){
+                            flag=Boolean.TRUE;
+                            tmp.add(String.valueOf(u.getAmount()));
+                        }
+                    }
+        //            Date date = new Date();
+        //            int hours = date.getHours();
+                    if(!flag){
+                    tmp.add("");
+                     }
 
-                     
+                }
+
                     }
          
                 }
         
             }
-
-           
-
 
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);

@@ -13,6 +13,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.will.cross.util.DateUtil;
 import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
@@ -608,7 +609,7 @@ public class ScheduleTimeTableController extends BaseController{
 
 
 
-
+        /*
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -655,7 +656,7 @@ public class ScheduleTimeTableController extends BaseController{
 
 
 
-
+*/
 
 
 
