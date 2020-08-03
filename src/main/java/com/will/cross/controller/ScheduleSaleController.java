@@ -31,6 +31,30 @@ public class ScheduleSaleController  extends BaseController{
 		
 		ScheduleSale sv= new ScheduleSale();
 
+        // 删除已有数据首先，根据areaId  日期 删除
+
+        String[] tableDate=scheduleSale.getTableData().split(",");
+        for(int i=0;i<=scheduleSale.getTableData().split(",").length;i=i+25){
+
+            String areaId=tableDate[i];
+
+
+                Condition querySale=new Condition(ScheduleSale.class);
+                querySale.createCriteria().andEqualTo("areaId",m.getId()).andEqualTo("delFlag","0")
+                   .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleSale.getEndDate()))
+                   .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
+
+                List<ScheduleSale> list = scheduleSaleService.findByCondition(querySale);
+
+                for(ScheduleSale s:list){
+                    //根据ID删除
+                    scheduleSaleService.deleteById(s.getId());
+                }
+
+
+        }
+
+
 		// 循环设置sale数据，并保存
         String[] tableDate=scheduleSale.getTableData().split(",");
 		for(int i=0;i<=scheduleSale.getTableData().split(",").length;i=i+25){
