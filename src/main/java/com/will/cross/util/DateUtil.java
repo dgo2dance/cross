@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -103,6 +104,7 @@ public class DateUtil {
      * @param hour 需要加的时间
      * @return
      */
+
     public static String addDateMinut(String day, int hour){   
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;   
@@ -114,7 +116,7 @@ public class DateUtil {
         if (date == null)   
             return "";   
         System.out.println("front:" + format.format(date)); //显示输入的日期  
-        Calendar cal = Calendar.getInstance();   
+        Calendar cal = Calendar.getInstance();
         cal.setTime(date);   
         cal.add(Calendar.HOUR, hour);// 24小时制   
         date = cal.getTime();   
