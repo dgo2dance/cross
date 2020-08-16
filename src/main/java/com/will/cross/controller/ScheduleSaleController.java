@@ -111,7 +111,7 @@ public class ScheduleSaleController  extends BaseController{
 	
 	
     // 查询数据并展示
-    @RequestMapping(value = "/getSale", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/get", method = RequestMethod.POST, produces = "application/json")
     public Result list(@RequestBody ScheduleSale scheduleSale)  {
      
 

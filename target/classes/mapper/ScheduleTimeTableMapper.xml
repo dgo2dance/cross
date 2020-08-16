@@ -19,5 +19,9 @@
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
     <result column="remarks" jdbcType="VARCHAR" property="remarks" />
     <result column="del_flag" jdbcType="CHAR" property="delFlag" />
+    <result column="master_id" jdbcType="VARCHAR" property="masterId" />
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    <result column="begin_date_time" jdbcType="TIMESTAMP" property="beginDateTime" />
+    <result column="end_date_time" jdbcType="TIMESTAMP" property="endDateTime" />
   </resultMap>
 </mapper>

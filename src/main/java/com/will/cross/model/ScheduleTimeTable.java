@@ -98,40 +98,23 @@ public class ScheduleTimeTable {
     @Column(name = "del_flag")
     private String delFlag;
 
-
     /**
-     * master_id
+     * 租户ID
      */
     @Column(name = "master_id")
     private String masterId;
 
-
-    public String getMasterId() {
-        return masterId;
-    }
-
-    public void setMasterId(String masterId) {
-        this.masterId = masterId;
-    }
-
-    public String getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
     /**
-     * org_id
+     * 组织ID
      */
     @Column(name = "org_id")
     private String orgId;
 
+    @Column(name = "begin_date_time")
+    private Date beginDateTime;
 
-
-
-
+    @Column(name = "end_date_time")
+    private Date endDateTime;
 
     /**
      * 获取编号
@@ -383,5 +366,69 @@ public class ScheduleTimeTable {
      */
     public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
+    }
+
+    /**
+     * 获取租户ID
+     *
+     * @return master_id - 租户ID
+     */
+    public String getMasterId() {
+        return masterId;
+    }
+
+    /**
+     * 设置租户ID
+     *
+     * @param masterId 租户ID
+     */
+    public void setMasterId(String masterId) {
+        this.masterId = masterId;
+    }
+
+    /**
+     * 获取组织ID
+     *
+     * @return org_id - 组织ID
+     */
+    public String getOrgId() {
+        return orgId;
+    }
+
+    /**
+     * 设置组织ID
+     *
+     * @param orgId 组织ID
+     */
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    /**
+     * @return begin_date_time
+     */
+    public Date getBeginDateTime() {
+        return beginDateTime;
+    }
+
+    /**
+     * @param beginDateTime
+     */
+    public void setBeginDateTime(Date beginDateTime) {
+        this.beginDateTime = beginDateTime;
+    }
+
+    /**
+     * @return end_date_time
+     */
+    public Date getEndDateTime() {
+        return endDateTime;
+    }
+
+    /**
+     * @param endDateTime
+     */
+    public void setEndDateTime(Date endDateTime) {
+        this.endDateTime = endDateTime;
     }
 }

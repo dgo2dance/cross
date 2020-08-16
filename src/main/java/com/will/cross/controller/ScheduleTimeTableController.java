@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -277,7 +278,7 @@ public class ScheduleTimeTableController extends BaseController{
 
 
     /**
-     * 获取排班表明细数据
+     * 获取排班表明细数据  WEB端
      * @return
      */
     @ApiOperation(value = "获取端排班表并展示", notes = "eee")
@@ -358,6 +359,10 @@ public class ScheduleTimeTableController extends BaseController{
 
 
             List<ScheduleTimeTableDTO> t=Lists.newArrayList();
+     //       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+
             for (String day : listDay) {
 
                 ScheduleTablePCDTO w=new ScheduleTablePCDTO();
@@ -373,12 +378,20 @@ public class ScheduleTimeTableController extends BaseController{
                     BeanUtils.copyProperties( timetable.get(0),table);
                     w.setStart(day+" 00:00:00");
                     w.setEnd(day+" 23:59:00");
+                    if(timetable.get(0).getBeginDateTime()!=null) {
+                        w.setStartTime(sdf.format(timetable.get(0).getBeginDateTime()));
+                    }
+                    if(timetable.get(0).getEndDateTime()!=null) {
+                        w.setEndTime(sdf.format(timetable.get(0).getEndDateTime()));
+                    }
                     w.setId(table.getId());
                     // 查找到  shiftName  设置shiftName;
                     List<ScheduleShift> ss=sshift.stream().filter(e->e.getId().equals(table.getShiftId())).collect(Collectors.toList());
                     if(ss.size()>0) {
                         w.setTitle(ss.get(0).getName());
                         w.setBgColor(ss.get(0).getColor());
+                        w.setStartTime(ss.get(0).getBeginDate1());
+                        w.setEndTime(ss.get(0).getEndDate1());
                     } else{
                         w.setTitle("");
                     }
@@ -416,7 +429,7 @@ public class ScheduleTimeTableController extends BaseController{
 
 
     /**
-     * 获取我的班表情况
+     * 获取我的班表情况  小程序端
      * @return
      */
     @ApiOperation(value = "获取排班表并展示", notes = "")
@@ -616,7 +629,7 @@ public class ScheduleTimeTableController extends BaseController{
             vo.getAgents().add(m);
 
         }
-        
+
         // 传递参数时间段
         List<String> listDay = DateUtil.getEveryday(DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()),
                 DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()));
@@ -664,7 +677,32 @@ public class ScheduleTimeTableController extends BaseController{
 
             JSONObject responseObj = null;
             responseObj = JSONObject.parseObject(content);
+
+            // 删除原有的；
+
+            Condition queryTable=new Condition(ScheduleTimeTable.class);
+            queryTable.createCriteria().andEqualTo("orgId",orgId)
+                    .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()))
+                    .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
+
+            List<ScheduleTimeTable> listTabel = scheduleTimeTableService.findByCondition(queryTable);
+
+            List<String> Id = listTabel.stream().map(s -> s.getId()).collect(Collectors.toList());
+
+            String Ids = "";
+            for (String ss : Id)
+            {
+                Ids += "'" +ss +"'" +  ",";
+            }
+            if(Ids.length()>1) {
+                Ids = Ids.substring(0, Ids.length() - 1);
+            }
+
+
             if(responseObj.get("code").equals(200)){
+                if(Ids.length()>0) {
+                    scheduleTimeTableService.deleteByIds(Ids);
+                }
 
                 List<SchedulePlanningDTO>  s= JSONObject.parseArray(responseObj.get("data").toString(), SchedulePlanningDTO.class);
                 for(SchedulePlanningDTO n:s){
@@ -674,6 +712,8 @@ public class ScheduleTimeTableController extends BaseController{
                         m.setPersonId(n.getId());
                         m.setBeginDate(st.getBeginDate());
                         m.setEndDate(st.getEndDate());
+                        m.setBeginDateTime(st.getBeginDate());
+                        m.setEndDateTime(st.getEndDate());
                         m.setCreateDate(new Date());
                         m.setUpdateDate(new Date());
 
