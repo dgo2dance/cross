@@ -1,12 +1,11 @@
 package com.will.cross.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.will.cross.core.Result;
 import com.will.cross.core.ResultGenerator;
-import com.will.cross.dto.ScheduleTableDTO;
-import com.will.cross.dto.ScheduleTablePCDTO;
-import com.will.cross.dto.ScheduleTimeTableDTO;
-import com.will.cross.dto.ScheduleTimeTableIamDTO;
+import com.will.cross.dto.*;
 import com.will.cross.model.*;
 import com.will.cross.service.*;
 import com.github.pagehelper.PageHelper;
@@ -14,6 +13,7 @@ import com.github.pagehelper.PageInfo;
 import com.will.cross.util.DateUtil;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.http.entity.StringEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
@@ -34,6 +34,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 
 
 
@@ -60,6 +61,10 @@ public class ScheduleTimeTableController extends BaseController{
 
     @Resource
     private SchedulePersonOrgRelateService schedulePersonOrgRelateService;
+
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
 
     @PostMapping
     public Result add(@RequestBody ScheduleTimeTable scheduleTimeTable) {
@@ -589,178 +594,123 @@ public class ScheduleTimeTableController extends BaseController{
 
         List<ScheduleTablePCDTO> scheduleTablePCDto = Lists.newArrayList();
 
-      
+        SysSolveVO vo=new SysSolveVO();
+
+        List<Employee> employ = Lists.newArrayList();
+        vo.setAgents(employ);
+
 
         String orgId=getMasterId();
+
 
         Condition query=new Condition(SchedulePersonOrgRelate.class);
         query.createCriteria().andEqualTo("orgId",orgId);
 
-        List<SchedulePersonOrgRelate> sys= schedulePersonOrgRelateService.findByCondition(query);
+        List<SchedulePersonOrgRelate> user= schedulePersonOrgRelateService.findByCondition(query);
 
         // 传递所有人员名单；
+        for(SchedulePersonOrgRelate u:user){
 
+            Employee m =new Employee(u.getPersonName(),40);
+            m.setId(u.getPersonId());
+            vo.getAgents().add(m);
+
+        }
+        
         // 传递参数时间段
+        List<String> listDay = DateUtil.getEveryday(DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()),
+                DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()));
+
+        vo.setDays(listDay);
 
         // 获取当前资源列表人员
 
         // 传递开始时间   结束时间     最小间隔      固定每个人时长
 
 
-
-
-        /*
-
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         //创建HttpPost对象，设置url访问地址
-        HttpPost httpPost = new HttpPost("http://yun.itheima.com/search");
-
-        //声明List集合，封装表单中的参数
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        //设置请求地址是：http://yun.itheima.com/search?keys=Java
-        params.add(new BasicNameValuePair("keys","Java"));
-
-        //创建表单的Entity对象,第一个参数就是封装好的表单数据，第二个参数就是编码
-        UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params,"utf8");
-
-        //设置表单的Entity对象到Post请求中
-        httpPost.setEntity(formEntity);
+        HttpPost httpPost = new HttpPost("http://localhost:39090/planningful/api/sys/schedule/solve");
 
         CloseableHttpResponse response = null;
+
         try {
-            //使用HttpClient发起请求，获取response
-             response = httpClient.execute(httpPost);
+            /*
+            //声明List集合，封装表单中的参数
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-            //解析响应
-            if (response.getStatusLine().getStatusCode() == 200) {
-                String content = EntityUtils.toString(response.getEntity(), "utf8");
-                System.out.println(content.length());
+            params.add(new BasicNameValuePair("keys","Java"));
+            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params,"utf8");
+            //设置表单的Entity对象到Post请求中
+            httpPost.setEntity(formEntity);
+            */
+
+
+            StringEntity stringEntity = new StringEntity( objectMapper.writeValueAsString(vo));
+            stringEntity.setContentType("application/json");
+
+     //       httpPost.addHeader("application/json", "text/json");
+
+            httpPost.setEntity(stringEntity);
+
+
+             //使用HttpClient发起请求，获取response
+            response = httpClient.execute(httpPost);
+
+        //解析响应
+        if (response.getStatusLine().getStatusCode() == 200) {
+            String content = EntityUtils.toString(response.getEntity(), "utf8");
+
+            JSONObject responseObj = null;
+            responseObj = JSONObject.parseObject(content);
+            if(responseObj.get("code").equals(200)){
+
+                List<SchedulePlanningDTO>  s= JSONObject.parseArray(responseObj.get("data").toString(), SchedulePlanningDTO.class);
+                for(SchedulePlanningDTO n:s){
+
+                    for(ScheduleTimeTable st:n.getAiSCH()) {
+                        ScheduleTimeTable m = new ScheduleTimeTable();
+                        m.setPersonId(n.getId());
+                        m.setBeginDate(st.getBeginDate());
+                        m.setEndDate(st.getEndDate());
+                        m.setCreateDate(new Date());
+                        m.setUpdateDate(new Date());
+
+                        m.setOrgId(getMasterId());
+                        m.setMasterId(getMasterId());
+
+                        m.setDelFlag("0");
+                        m.setId(UUID.randomUUID().toString());
+                        m.setCreateBy(getMasterId());
+                        m.setUpdateBy(getMasterId());
+                        scheduleTimeTableService.save(m);
+                    }
+                }
+
             }
+            System.out.println(content.length());
+        }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            return ResultGenerator.genFailResult("自动排列失败");
         }finally {
             //关闭response
             try {
                 response.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
                 httpClient.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
 
-
-*/
-
-
-
-
-
-
-
-
-
-        // 2.根据当前激活组织  及时间段区间  查询里面的排班情况
-        //  PageInfo pageInfo = new PageInfo(list);
-        Condition queryTable=new Condition(ScheduleTimeTable.class);
-        queryTable.createCriteria().andEqualTo("orgId",orgId)
-                .andLessThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()))
-                .andGreaterThanOrEqualTo("beginDate",DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()));
-
-        List<ScheduleTimeTable> listTabel = scheduleTimeTableService.findByCondition(queryTable);
-
-
-        //获取中间所有间隔的时间
-        List<String> listDay = DateUtil.getEveryday(DateUtil.getYearMonthDay(scheduleTimeTable.getBeginDate()),
-                DateUtil.getYearMonthDay(scheduleTimeTable.getEndDate()));
-
-        //获取所有班次的名字;
-        // get the shift id
-        List<String> shiftId = listTabel.stream().map(s -> s.getShiftId()).collect(Collectors.toList());
-
-        shiftId = shiftId.stream().distinct().collect(Collectors.toList());
-
-        String shiftIds = "";
-        for (String ss : shiftId)
-        {
-            shiftIds += "'" +ss +"'" +  ",";
-        }
-        if(shiftIds.length()>1) {
-            shiftIds = shiftIds.substring(0, shiftIds.length() - 1);
-        }
-
-        //   String shiftIds = shiftId.stream().collect(Collectors.joining(","));
-        List<ScheduleShift> sshift=new ArrayList<>();
-        if(shiftIds.length()>0) {
-            sshift = scheduleShiftService.findByIds(shiftIds);
-        }
-
-
-        // 3.将资源用户  及排班数据  进行重组  展示为想要的形式；
-        for(SchedulePersonOrgRelate m:sys){
-
-
-
-            List<ScheduleTimeTableDTO> t=Lists.newArrayList();
-            for (String day : listDay) {
-
-                ScheduleTablePCDTO w=new ScheduleTablePCDTO();
-
-                ScheduleTimeTableDTO table=new ScheduleTimeTableDTO();
-
-                List<ScheduleTimeTable> timetable=listTabel.stream().filter(e->e.getPersonId().equals(m.getPersonId()) )
-                        .filter(e->DateUtil.getYearMonthDay(e.getBeginDate()).equals(day))
-                        .collect(Collectors.toList());
-
-                if(timetable.size()>0){
-                    w.setResourceId(m.getPersonId());
-                    BeanUtils.copyProperties( timetable.get(0),table);
-                    w.setStart(day+" 00:00:00");
-                    w.setEnd(day+" 23:59:00");
-                    w.setId(table.getId());
-                    // 查找到  shiftName  设置shiftName;
-                    List<ScheduleShift> ss=sshift.stream().filter(e->e.getId().equals(table.getShiftId())).collect(Collectors.toList());
-                    if(ss.size()>0) {
-                        w.setTitle(ss.get(0).getName());
-                        w.setBgColor(ss.get(0).getColor());
-                    } else{
-                        w.setTitle("");
-                    }
-
-                    scheduleTablePCDto.add(w);
-                }
-            }
-
-        }
-
-
-//
-//
-//        list.stream().forEach(m->{
-//
-//
-//            List<ScheduleTimeTable> timetable=listTabel.stream().filter(e->e.getPersonId().equals(m.getId()) )
-//                    .collect(Collectors.toList());
-//            ScheduleTableDTO w=new ScheduleTableDTO();
-//            w.setResourceId(m.getId());
-//            w.setResourceName(m.getName());
-//            w.setTable(timetable);
-//     //       w.setTable(listTabel);
-//
-//            scheduleTableDto.add(w);
-//
-//
-//
-//        });
-
-        return ResultGenerator.genSuccessResult(scheduleTablePCDto);
-
+        return ResultGenerator.genSuccessResult();
 
     }
 
